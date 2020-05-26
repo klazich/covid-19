@@ -1,0 +1,44 @@
+{
+  "name": "covid-19-hotspots",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "lib/index.js",
+  "keywords": [],
+  "author": "Kevin Lazich <dev@kevinlazich.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/klazich/..."
+  },
+  "scripts": {
+    "build": "babel src -d lib",
+    "commit": "commit",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css,md,mdx}\"",
+    "prestart": "npm run build",
+    "start": "node lib/index.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-transform-runtime": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/prompt-cli": "^8.3.5",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.6",
+    "prettier": "2.0.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,json,css,md,mdx}": "prettier --write"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.9.6"
+  }
+}
