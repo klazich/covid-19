@@ -2,10 +2,14 @@ import axios from 'axios'
 import httpAdapter from 'axios/lib/adapters/http'
 import Papa from 'papaparse'
 
-const DATA_URL =
+const NYT_DATA_URL =
   'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv'
 
+const JHU_DATA_URL =
+  'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
+
 async function createHttpStream(url) {
+  // Request object for axios
   const request = {
     url,
     responseType: 'stream',
@@ -21,14 +25,14 @@ async function createHttpStream(url) {
 }
 
 async function* csvParser(url) {
+  // Parse readable stream instead of file
+  // See: https://github.com/mholt/PapaParse#papa-parse-for-node
   const csvParserStream = Papa.parse(Papa.NODE_STREAM_INPUT, { header: true })
-  csvParserStream.on('end', () => console.log('****** PARSER END ******'))
 
   try {
     const httpStream = await createHttpStream(url)
     // Pipe the http stream to the csv parser
     httpStream.pipe(csvParserStream)
-    httpStream.on('end', () => console.log('****** HTTP END ******'))
   } catch (error) {
     console.error(error)
   }
@@ -41,11 +45,8 @@ async function* csvParser(url) {
 
 async function main() {
   try {
-    let c = 0
-    for await (const record of csvParser(DATA_URL)) {
-      // console.log(record)
-      if (c % 10000 === 0) console.log(c)
-      c += 1
+    for await (const record of csvParser(JHU_DATA_URL)) {
+      console.log(record)
     }
   } catch (error) {
     console.error(error)
