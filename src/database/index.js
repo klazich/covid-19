@@ -5,27 +5,30 @@ const mongoServer = new MongoMemoryServer()
 
 mongoose.Promise = Promise
 
-async function initDatabase() {
+async function getDatabaseUri() {
   const uri = await mongoServer.getUri()
+  return uri
+}
+
+export async function initDatabase(uri = getDatabaseUri) {
+  const uri = await getDatabaseUri()
 
   const options = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
   }
 
-  mongoose.connect(uri, options)
+  try {
+    await mongoose.connect(uri, options)
+  } catch (error) {
+    console.error('Could not connect to database', error)
+  }
 
-  const db = mongoose.connection
-
-  db.on('error', (error) => {
-    console.error(error)
-    if (error.message.code === 'ETIMEDOUT') {
-      console.log('connection timed out, retrying...')
-      mongoose.connect(uri, options)
-    }
+  mongoose.connection.on('error', (error) => {
+    console.error('Database connection error', error)
   })
 
-  db.once('open', () => {
-    console.log(`MongoDB successfully connected to ${uri}`)
+  mongoose.connection.once('open', () => {
+    console.log(`Successfully connected to ${uri}`)
   })
 }
