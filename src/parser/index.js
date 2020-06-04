@@ -52,40 +52,5 @@ async function* parseRemoteCSV(url) {
   }
 }
 
-async function* transform(readable, propMapFn = (obj) => obj) {}
-
-// {
-// 	"_id" : ObjectId("5e8cd51800c98085a07ce9e1"),
-// 	"uid" : 84036115,
-// 	"country_iso2" : "US",
-// 	"country_iso3" : "USA",
-// 	"country_code" : 840,
-// 	"fips" : 36115,
-// 	"county" : "Washington",
-// 	"state" : "New York",
-// 	"cuntry" : "US",
-// 	"combined_name" : "Washington, New York, US",
-// 	"population" : 61204,
-// 	"loc" : {
-// 		"type" : "Point",
-// 		"coordinates" : [
-// 			-73.4304,
-// 			43.3115
-// 		]
-// 	},
-// 	"date" : ISODate("2020-04-06T00:00:00Z"),
-// 	"confirmed" : 19,
-// 	"deaths" : 1
-// }
-
-async function main() {
-  try {
-    for await (const record of parseRemoteCSV(JHU_CSEE_US_TIME_SERIES_URL)) {
-      if (record.UID === '84036115') console.log(record)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-main()
+export { JHU_CSEE_FIPS_LOOKUP_URL, JHU_CSEE_FIPS_LOOKUP_URL }
+export default parseRemoteCSV
