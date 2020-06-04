@@ -29,5 +29,3 @@ async function initDatabase() {
     console.log(`MongoDB successfully connected to ${uri}`)
   })
 }
-
-initDatabase()
