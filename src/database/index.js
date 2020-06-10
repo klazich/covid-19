@@ -10,7 +10,7 @@ async function getDatabaseUri() {
   return uri
 }
 
-export async function initDatabase(uri = getDatabaseUri) {
+export async function initDatabase() {
   const uri = await getDatabaseUri()
 
   const options = {

@@ -19,4 +19,6 @@ const entrySchema = new Schema({
   confirmed: Number,
 })
 
-export default model('Entry', entrySchema)
+const Entry = model('Entry', entrySchema)
+
+export default Entry
