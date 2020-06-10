@@ -1,5 +1,5 @@
-import stream from './stream'
-import parser from './parser'
+import httpStream from './stream'
+import csvParser from './parser'
 
 async function createHttpStream(url) {
   // Request object for axios
@@ -10,8 +10,8 @@ async function createHttpStream(url) {
   }
 
   try {
-    const httpStream = await stream(url)
-    return parser(httpStream)
+    const stream = await httpStream(url)
+    return csvParser(stream)
   } catch (error) {
     console.error(error)
   }
