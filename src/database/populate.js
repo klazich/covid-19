@@ -1,48 +1,56 @@
-import { getPopulationMap, getCovid19Data } from '../parser'
+import { parser } from '../parser'
 import Entry from './models/entry'
-import { initDatabase } from './index'
+import { initDatabase, dropDatabase, closeDatabase } from './index'
 
-const CHUNK_LENGTH = 2000
+export const JHU_CSEE_US_TIME_SERIES_URL =
+  'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
 
+export const JHU_CSEE_FIPS_LOOKUP_URL =
+  'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
+
+async function fetchPopulationStats() {
+  const url = JHU_CSEE_FIPS_LOOKUP_URL
+  const countryCodes = new Set(['16', '316', '580', '630', '840', '850'])
+
+  const map = new Map()
+
+  for await (const data of await parser(url)) {
+    if (countryCodes.has(data.code3)) {
+      const { UID, Population } = data
+      map.set(UID, Number(Population))
+    }
+  }
+
+  return map
+}
+
+const cleanKeys = (obj) => ({
+  uid: obj.UID,
+  country_iso2: obj.iso2,
+  country_iso3: obj.iso3,
+  country_code: obj.code3,
+  fips: obj.FIPS,
+  county: obj.Admin2,
+  state: obj.Province_State,
+  country: obj.Country_Region,
+  combined_name: obj.Combined_Key,
+  loc: {
+    type: 'Point',
+    coordinates: [obj.Long_, obj.Lat],
+  },
+})
 const isDate = (str) => /\d?\d\/\d\d\/\d\d/.test(str)
 const parseDate = (str) =>
   str.split(/\//g).map((v, i) => parseInt(i === 2 ? `20${v}` : v, 10))
 
-// UID            : '84001055',
-// iso2           : 'US',
-// iso3           : 'USA',
-// code3          : '840',
-// FIPS           : '1055.0',
-// Admin2         : 'Etowah',
-// Province_State : 'Alabama',
-// Country_Region : 'US',
-// Lat            : '34.04567266',
-// Long_          : '-86.04051873',
-// Combined_Key   : 'Etowah, Alabama, US',
-
-// '1/22/20': '0',
-// '1/23/20': '0',
-// '1/24/20': '0',
-
-async function transformAndSplitData() {
-  const populationMap = await getPopulationMap()
+async function cleanData() {
+  const populationMap = await fetchPopulationStats()
 
   return function* (obj) {
-    const token = {
-      uid: obj.UID,
-      country_iso2: obj.iso2,
-      country_iso3: obj.iso3,
-      country_code: obj.code3,
-      fips: obj.FIPS,
-      county: obj.Admin2,
-      state: obj.Province_State,
-      country: obj.Country_Region,
-      combined_name: obj.Combined_Key,
-      population: populationMap.get(obj.UID),
-      loc: {
-        type: 'Point',
-        coordinates: [obj.Lat, obj.Long_],
-      },
+    const doc = cleanKeys(obj)
+    doc.population = populationMap.get(doc.uid)
+
+    for (const key in doc) {
     }
 
     for (const key in obj) {
@@ -50,7 +58,7 @@ async function transformAndSplitData() {
         const [month, day, year] = parseDate(key)
 
         yield {
-          ...token,
+          ...doc,
           date: new Date(year, month - 1, day), // Month is 0 indexed
           confirmed: obj[key],
         }
@@ -78,48 +86,34 @@ async function transformAndSplitData() {
 //   confirmed: Number,
 // })
 
-async function* objToEntries(dataIterator = getCovid19Data()) {
-  const transform = await transformAndSplitData()
+async function loadEntries(limit = Infinity) {
+  const url = JHU_CSEE_US_TIME_SERIES_URL
+  const cleanup = await cleanData()
 
-  for await (const obj of dataIterator) {
-    yield* transform(obj)
-  }
-}
+  const docs = []
 
-async function* chunkEntries(entriesIterator = objToEntries()) {
-  let chunk = []
-  for await (const entry of entriesIterator) {
-    chunk.push(entry)
-    if (chunk.length >= CHUNK_LENGTH) {
-      yield chunk
-      chunk = []
-    }
+  for await (const data of await parser(url)) {
+    docs.push(...cleanup(data))
+    if (docs.length > limit) break
   }
-  if (chunk.length > 0) yield chunk
-}
 
-async function* loadEntries(chunkIterator = chunkEntries(), limit = Infinity) {
-  let count = 0
-  for await (const chunk of chunkIterator) {
-    if (count > limit) break
-    try {
-      yield Entry.insertMany(chunk)
-      count += chunk.length
-    } catch (error) {
-      console.error(error)
-    }
+  await dropDatabase()
+
+  try {
+    await Entry.insertMany(docs)
+  } catch (error) {
+    console.error('Could not insert documents')
+    console.error(error)
   }
-  console.log('all inserts started...')
 }
 
 const main = async () => {
   await initDatabase()
-  for await (const insert of loadEntries()) {
-    console.log(insert)
-  }
-
-  const entries = await Entry.find()
-  console.log(entries)
+  await loadEntries(5000)
+  const test = await Entry.findOne()
+  console.log(test)
+  console.log(test.loc)
+  await closeDatabase()
 }
 
 main()
