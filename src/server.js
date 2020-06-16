@@ -2,13 +2,10 @@ import Koa from 'koa'
 import mount from 'koa-mount'
 import graphqlHTTP from 'koa-graphql'
 
-import { initDatabase } from './database'
 import { schema } from './graphql/schema'
 import { root } from './graphql/root'
 
-async function run() {
-  await initDatabase()
-
+export default async function initServer() {
   const app = new Koa()
 
   app.use(
@@ -32,5 +29,3 @@ async function run() {
     console.log(`listening at http://localhost:${port}`)
   })
 }
-
-run()

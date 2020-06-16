@@ -1,20 +1,19 @@
 import mongoose from 'mongoose'
-import { MongoMemoryServer } from 'mongodb-memory-server'
+// import { MongoMemoryServer } from 'mongodb-memory-server'
 
-const mongoMemoryServer = new MongoMemoryServer()
+// const mongoMemoryServer = new MongoMemoryServer()
 
 mongoose.Promise = Promise
 
-async function getDatabaseUri() {
-  // const uri = await mongoMemoryServer.getUri()
-  const pw = '86PF0Qirpx4hT6WU'
-  const db = 'covid-19'
-  const uri = `mongodb+srv://admin:${pw}@cluster0-6qpn3.mongodb.net/${db}?retryWrites=true&w=majority`
-  return uri
-}
+const getDatabaseUrl = () =>
+  process.env.NODE_ENV === 'development'
+    ? process.env.DEVELOPMENT_DB_URL
+    : process.env.PRODUCTION_DB_URL
 
-export async function initDatabase() {
-  const uri = await getDatabaseUri()
+export default async function initDatabase() {
+  const url = getDatabaseUrl()
+
+  console.log(process.env.NODE_ENV, url)
 
   const options = {
     useUnifiedTopology: true,
@@ -22,19 +21,19 @@ export async function initDatabase() {
   }
 
   try {
-    await mongoose.connect(uri, options)
+    await mongoose.connect(url, options)
   } catch (error) {
     console.error('Could not connect to database')
     console.error(error)
   }
 
-  mongoose.connection
-    .once('open', () => {
-      console.log(`Successfully connected to MongoDB at ${uri}`)
-    })
-    .on('error', (error) => {
-      console.error('Database connection error', error)
-    })
+  const db = mongoose.connection
+  db.on('error', (error) => {
+    console.error('Database connection error', error)
+  })
+  db.once('open', () => {
+    console.log(`Successfully connected to MongoDB at ${url}`)
+  })
 }
 
 export async function closeDatabase(force = false) {
