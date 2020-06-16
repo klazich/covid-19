@@ -29,4 +29,3 @@ export default async function initServer() {
     console.log(`listening at http://localhost:${port}`)
   })
 }
-
