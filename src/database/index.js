@@ -1,7 +1,4 @@
 import mongoose from 'mongoose'
-// import { MongoMemoryServer } from 'mongodb-memory-server'
-
-// const mongoMemoryServer = new MongoMemoryServer()
 
 mongoose.Promise = Promise
 
@@ -23,13 +20,13 @@ export default async function startDatabase() {
   try {
     await mongoose.connect(url, options)
   } catch (error) {
-    console.error('Could not connect to database')
+    console.error('(mongoose) Could not connect to MongoDB')
     console.error(error)
   }
 
   const db = mongoose.connection
   db.on('error', (error) => {
-    console.error('Database connection error', error)
+    console.error('(mongoose) Connection error with MongoDB', error)
   })
   db.once('open', () => {
     console.log(`Successfully connected to MongoDB at ${url}`)
