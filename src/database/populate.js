@@ -2,14 +2,8 @@ import { parser } from '../parser'
 import Entry from './models/entry'
 import startDatabase, { dropDatabase, closeDatabase } from './index'
 
-export const JHU_CSEE_US_TIME_SERIES_URL =
-  'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
-
-export const JHU_CSEE_FIPS_LOOKUP_URL =
-  'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
-
 async function fetchPopulationStats() {
-  const url = JHU_CSEE_FIPS_LOOKUP_URL
+  const url = process.env.JHU_FIPS_LOOKUP_URL
   const countryCodes = new Set(['16', '316', '580', '630', '840', '850'])
 
   const map = new Map()
@@ -50,8 +44,7 @@ async function cleanData() {
     const doc = cleanKeys(obj)
     doc.population = populationMap.get(doc.uid)
 
-    for (const key in doc) {
-    }
+    for (const key in doc) if (doc[key] === '') delete doc[key]
 
     for (const key in obj) {
       if (isDate(key)) {
@@ -67,27 +60,8 @@ async function cleanData() {
   }
 }
 
-// const entrySchema = new Schema({
-//   uid            : Number,
-//   country_iso2   : String,
-//   country_iso3   : String,
-//   country_code   : Number,
-//   fips           : Number,
-//   county         : String,
-//   state          : String,
-//   country        : String,
-//   combined_name  : String,
-//   population     : Number,
-//   loc: {
-//     type: { type: String },
-//     coordinates: [Number],
-//   },
-//   date: Date,
-//   confirmed: Number,
-// })
-
 async function loadEntries(limit = Infinity) {
-  const url = JHU_CSEE_US_TIME_SERIES_URL
+  const url = process.env.JHU_TIME_SERIES_DATA_URL
   const cleanup = await cleanData()
 
   const docs = []
