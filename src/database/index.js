@@ -10,7 +10,7 @@ const getDatabaseUrl = () =>
     ? process.env.DEVELOPMENT_DB_URL
     : process.env.PRODUCTION_DB_URL
 
-export default async function initDatabase() {
+export default async function startDatabase() {
   const url = getDatabaseUrl()
 
   console.log(process.env.NODE_ENV, url)

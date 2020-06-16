@@ -1,7 +1,9 @@
-import initServer from './server'
-import initDatabase from './database'
+import startServer from './server'
+import startDatabase from './database'
 
 async function start() {
-  await initDatabase()
-  await initServer()
+  await startDatabase()
+  await startServer()
 }
+
+start()
