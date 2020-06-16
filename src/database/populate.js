@@ -1,6 +1,6 @@
 import { parser } from '../parser'
 import Entry from './models/entry'
-import { initDatabase, dropDatabase, closeDatabase } from './index'
+import initDatabase, { dropDatabase, closeDatabase } from './index'
 
 export const JHU_CSEE_US_TIME_SERIES_URL =
   'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
