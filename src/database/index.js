@@ -2,15 +2,15 @@ import mongoose from 'mongoose'
 
 mongoose.Promise = Promise
 
-const getDatabaseUrl = () =>
+const getDatabaseUri = () =>
   process.env.NODE_ENV === 'development'
     ? process.env.DEVELOPMENT_DB_URL
     : process.env.PRODUCTION_DB_URL
 
-export default async function startDatabase() {
-  const url = getDatabaseUrl()
+export async function startDatabase() {
+  const uri = getDatabaseUri()
 
-  console.log(process.env.NODE_ENV, url)
+  console.log(process.env.NODE_ENV, uri)
 
   const options = {
     useUnifiedTopology: true,
@@ -18,36 +18,32 @@ export default async function startDatabase() {
   }
 
   try {
-    await mongoose.connect(url, options)
+    await mongoose.connect(uri, options)
+    console.log(`Successfully connected to MongoDB server`)
+    console.log(`  URI: ${uri}`)
+    console.log(`  DATABASE: ${mongoose.connection.name}`)
   } catch (error) {
-    console.error('(mongoose) Could not connect to MongoDB')
+    console.log('Failed to connect to MongoDB server')
     console.error(error)
   }
-
-  const db = mongoose.connection
-  db.on('error', (error) => {
-    console.error('(mongoose) Connection error with MongoDB', error)
-  })
-  db.once('open', () => {
-    console.log(`Successfully connected to MongoDB at ${url}`)
-  })
 }
 
 export async function closeDatabase(force = false) {
   try {
     await mongoose.connection.close(force)
-    console.log('Connection to MongoDB closed')
+    console.log('Successfully closed connection to MongoDB server')
   } catch (error) {
+    console.log('Failed to close connection to MongoDB server')
     console.error(error)
   }
 }
 
 export async function dropDatabase() {
   try {
-    const dbName = mongoose.connection.name
     await mongoose.connection.dropDatabase()
-    console.log(`Dropped database: ${dbName}`)
+    console.log(`Successfully dropped database: ${mongoose.connection.name}`)
   } catch (error) {
+    console.log(`Failed to drop database: ${mongoose.connection.name}`)
     console.error(error)
   }
 }

@@ -1,6 +1,6 @@
 import { parser } from '../parser'
 import Entry from './models/entry'
-import startDatabase, { dropDatabase, closeDatabase } from './index'
+import { startDatabase, dropDatabase, closeDatabase } from './index'
 
 async function fetchPopulationStats() {
   const url = process.env.JHU_FIPS_LOOKUP_URL
@@ -18,6 +18,10 @@ async function fetchPopulationStats() {
   return map
 }
 
+const isDate = (str) => /\d?\d\/\d\d\/\d\d/.test(str)
+const parseDate = (str) =>
+  str.split(/\//g).map((v, i) => parseInt(i === 2 ? `20${v}` : v, 10))
+
 const cleanKeys = (obj) => ({
   uid: obj.UID,
   country_iso2: obj.iso2,
@@ -33,25 +37,22 @@ const cleanKeys = (obj) => ({
     coordinates: [obj.Long_, obj.Lat],
   },
 })
-const isDate = (str) => /\d?\d\/\d\d\/\d\d/.test(str)
-const parseDate = (str) =>
-  str.split(/\//g).map((v, i) => parseInt(i === 2 ? `20${v}` : v, 10))
 
-async function cleanData() {
+async function cleanJHUDataObjects() {
   const populationMap = await fetchPopulationStats()
 
   return function* (obj) {
-    const doc = cleanKeys(obj)
-    doc.population = populationMap.get(doc.uid)
+    const cleaned = cleanKeys(obj)
+    cleaned.population = populationMap.get(cleaned.uid) // Add population stats to obj
 
-    for (const key in doc) if (doc[key] === '') delete doc[key]
+    for (const key in cleaned) if (cleaned[key] === '') delete cleaned[key]
 
     for (const key in obj) {
       if (isDate(key)) {
         const [month, day, year] = parseDate(key)
 
         yield {
-          ...doc,
+          ...cleaned,
           date: new Date(year, month - 1, day), // Month is 0 indexed
           confirmed: obj[key],
         }
@@ -60,31 +61,51 @@ async function cleanData() {
   }
 }
 
-async function loadEntries(limit = Infinity) {
+async function* streamJHUDataAsObjects() {
   const url = process.env.JHU_TIME_SERIES_DATA_URL
-  const cleanup = await cleanData()
+  const clean = await cleanJHUDataObjects()
 
-  const docs = []
-
-  for await (const data of await parser(url)) {
-    docs.push(...cleanup(data))
-    if (docs.length > limit) break
+  for await (const obj of await parser(url)) {
+    yield* clean(obj)
   }
+}
 
-  await dropDatabase()
-
+async function createManyEntires(docs) {
   try {
+    console.log(`Inserting ${docs.length} new documents...`)
     await Entry.insertMany(docs)
+    console.log('done')
   } catch (error) {
     console.error('Could not insert documents')
     console.error(error)
   }
 }
 
+async function loadJHUData(chunkSize = 0, limit = Infinity) {
+  await dropDatabase()
+
+  let docs = []
+
+  for await (const doc of streamJHUDataAsObjects()) {
+    docs.push(doc)
+
+    if (chunkSize > 1 && docs.length >= chunkSize) {
+      await createManyEntires(docs)
+      docs = []
+    }
+
+    if (docs.length > limit) break
+  }
+
+  if (docs.length > 0) await createManyEntires(docs)
+}
+
 const main = async () => {
   await startDatabase()
-  await loadEntries(5000)
-  const test = await Entry.findOne()
+  await loadJHUData(10000)
+  const test = await Entry.findOne({
+    combined_name: 'Washington, New York, US',
+  })
   console.log(test)
   console.log(test.loc)
   await closeDatabase()
