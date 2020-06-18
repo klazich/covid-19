@@ -1,14 +1,14 @@
-import { parser } from '../parser'
+import { remoteCsvParser } from '../parser'
 import Entry from './models/entry'
-import { startDatabase, dropDatabase, closeDatabase } from './index'
+import Metadata from './models/metadata'
 
-async function fetchPopulationStats() {
+async function fetchJHUPopulationStats() {
   const url = process.env.JHU_FIPS_LOOKUP_URL
   const countryCodes = new Set(['16', '316', '580', '630', '840', '850'])
 
   const map = new Map()
 
-  for await (const data of await parser(url)) {
+  for await (const data of await remoteCsvParser(url)) {
     if (countryCodes.has(data.code3)) {
       const { UID, Population } = data
       map.set(UID, Number(Population))
@@ -38,8 +38,8 @@ const cleanKeys = (obj) => ({
   },
 })
 
-async function cleanJHUDataObjects() {
-  const populationMap = await fetchPopulationStats()
+async function cleanJHUData() {
+  const populationMap = await fetchJHUPopulationStats()
 
   return function* (obj) {
     const cleaned = cleanKeys(obj)
@@ -61,54 +61,55 @@ async function cleanJHUDataObjects() {
   }
 }
 
-async function* streamJHUDataAsObjects() {
+async function* streamJHUData() {
   const url = process.env.JHU_TIME_SERIES_DATA_URL
-  const clean = await cleanJHUDataObjects()
+  const clean = await cleanJHUData()
 
-  for await (const obj of await parser(url)) {
+  for await (const obj of await remoteCsvParser(url)) {
     yield* clean(obj)
   }
 }
 
-async function createManyEntires(docs) {
+export async function bulkInsertJHUData() {
+  let bulk = Entry.collection.initializeUnorderedBulkOp()
+
+  // For metadata collection
+  const states = new Set()
+  const counties = new Set()
+  const uids = new Set()
+  let firstDate = null
+  let lastDate = null
+
+  for await (const doc of streamJHUData()) {
+    if (doc.state) states.add(doc.state)
+    if (doc.county) counties.add(doc.county)
+    uids.add(doc.uid)
+    if (firstDate === null) firstDate = doc.date
+    lastDate = doc.date
+
+    bulk.insert(doc) // Insert new document
+  }
+
   try {
-    console.log(`Inserting ${docs.length} new documents...`)
-    await Entry.insertMany(docs)
-    console.log('done')
+    console.log(`Inserting ${bulk.length} new documents...`)
+    await bulk.execute() // Execute the bulk insert op
+    console.log('...done')
   } catch (error) {
-    console.error('Could not insert documents')
+    console.log('Could not insert new documents')
     console.error(error)
   }
-}
 
-async function loadJHUData(chunkSize = 0, limit = Infinity) {
-  await dropDatabase()
-
-  let docs = []
-
-  for await (const doc of streamJHUDataAsObjects()) {
-    docs.push(doc)
-
-    if (chunkSize > 1 && docs.length >= chunkSize) {
-      await createManyEntires(docs)
-      docs = []
-    }
-
-    if (docs.length > limit) break
+  try {
+    console.log('Creating the metadata document...')
+    await Metadata.create({
+      states: [...states],
+      counties: [...counties],
+      uids: [...uids],
+      first_date: firstDate,
+      last_date: lastDate,
+    })
+    console.log('...done')
+  } catch (error) {
+    console.log('Could not create the metadata document')
   }
-
-  if (docs.length > 0) await createManyEntires(docs)
 }
-
-const main = async () => {
-  await startDatabase()
-  await loadJHUData(10000)
-  const test = await Entry.findOne({
-    combined_name: 'Washington, New York, US',
-  })
-  console.log(test)
-  console.log(test.loc)
-  await closeDatabase()
-}
-
-main()
