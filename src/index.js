@@ -1,9 +1,16 @@
-import startServer from './server'
-import startDatabase from './database'
+// import startServer from './server'
+import { startDatabase, dropDatabase, closeDatabase } from './database'
+import { bulkInsertJHUData } from './database/populate'
+import Entry from './database/models/entry'
+import Metadata from './database/models/metadata'
 
-async function start() {
+async function test() {
   await startDatabase()
-  await startServer()
+  await dropDatabase()
+  await bulkInsertJHUData()
+  console.log(await Entry.findOne())
+  console.log(await Metadata.findOne())
+  await closeDatabase()
 }
 
-// start()
+test()
