@@ -22,6 +22,7 @@
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
     "graphql": "^15.0.0",
+    "graphql-tools": "^6.0.10",
     "koa": "^2.12.0",
     "koa-graphql": "^0.8.0",
     "koa-mount": "^4.0.0",

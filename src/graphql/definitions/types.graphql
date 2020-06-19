@@ -1,10 +1,5 @@
-type Location {
-  type: String!
-  coordinates: [Float!]!
-}
-
 type Entry {
-  id: ID
+  id: ID!
   uid: Int!
   country_iso2: String!
   country_iso3: String!
@@ -18,4 +13,18 @@ type Entry {
   loc: Location!
   date: String!
   confirmed: Int!
+}
+
+type Metadata {
+  id: ID!
+  states: [String!]!
+  counties: [String!]!
+  uids: [Number!]!
+  firstDate: String!
+  lastDate: String!
+}
+
+type Location {
+  type: String!
+  coordinates: [Float!]!
 }
