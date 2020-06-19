@@ -4,6 +4,7 @@ import graphqlHTTP from 'koa-graphql'
 
 import { schema } from './graphql/schema'
 import { root } from './graphql/root'
+import { models } from './database'
 
 export default async function initServer() {
   const app = new Koa()
@@ -15,6 +16,7 @@ export default async function initServer() {
         schema,
         rootValue: root,
         graphiql: true,
+        context: { models },
       })
     )
   )
@@ -23,7 +25,7 @@ export default async function initServer() {
     log.error('server error', err)
   })
 
-  const port = 9000
+  const port = process.env.PORT
 
   app.listen(port, () => {
     console.log(`listening at http://localhost:${port}`)

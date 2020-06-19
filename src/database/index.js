@@ -1,5 +1,10 @@
 import mongoose from 'mongoose'
 
+import Entry from './models/entry'
+import Metadata from './models/metadata'
+
+export const models = { Entry, Metadata }
+
 mongoose.Promise = Promise
 
 const getDatabaseUri = () =>
