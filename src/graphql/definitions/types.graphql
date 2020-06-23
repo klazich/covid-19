@@ -1,3 +1,7 @@
+type Query {
+  entries: [Entry]
+}
+
 type Entry {
   id: ID!
   uid: Int!
@@ -19,7 +23,7 @@ type Metadata {
   id: ID!
   states: [String!]!
   counties: [String!]!
-  uids: [Number!]!
+  uids: [Int!]!
   firstDate: String!
   lastDate: String!
 }
