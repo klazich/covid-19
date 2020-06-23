@@ -68,7 +68,7 @@ const entrySchema = new Schema({
 entrySchema.index({ country_iso3: 1, date: 1 })
 entrySchema.index({ uid: 1, date: 1 })
 entrySchema.index({ date: 1 })
-entrySchema.index({ location: '2dsphere' })
+entrySchema.index({ loc: '2dsphere' })
 entrySchema.index({ country: 1, date: 1 })
 entrySchema.index({ country: 1, state: 1, date: 1 })
 entrySchema.index({ country: 1, state: 1, county: 1, date: 1 })
