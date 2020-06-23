@@ -16,13 +16,15 @@
     "commit": "commit",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css,md,mdx}\"",
     "prestart": "npm run build",
-    "start": "node -r dotenv/config lib/index.js"
+    "start": "node -r dotenv/config lib/server.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
     "graphql": "^15.0.0",
+    "graphql-scalars": "^1.1.7",
     "graphql-tools": "^6.0.10",
+    "http-graceful-shutdown": "^2.3.2",
     "koa": "^2.12.0",
     "koa-graphql": "^0.8.0",
     "koa-mount": "^4.0.0",
