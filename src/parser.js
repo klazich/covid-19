@@ -2,7 +2,7 @@ import axios from 'axios'
 import httpAdapter from 'axios/lib/adapters/http'
 import Papa from 'papaparse'
 
-async function httpDataStream(url) {
+async function createHttpStream(url) {
   // The request object passed to axios
   const request = {
     url,
@@ -19,7 +19,7 @@ async function httpDataStream(url) {
   }
 }
 
-async function* csvParserSteam(stream) {
+async function* iterCsvLinesFromStream(stream) {
   // Parse readable stream instead of file
   // See: https://github.com/mholt/PapaParse#papa-parse-for-node
   const parserStream = Papa.parse(Papa.NODE_STREAM_INPUT, { header: true })
@@ -35,8 +35,8 @@ async function* csvParserSteam(stream) {
 
 export async function remoteCsvParser(url) {
   try {
-    const stream = await httpDataStream(url)
-    return csvParserSteam(stream)
+    const stream = await createHttpStream(url)
+    return iterCsvLinesFromStream(stream)
   } catch (error) {
     console.error(error)
   }
