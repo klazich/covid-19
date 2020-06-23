@@ -34,7 +34,7 @@ const cleanKeys = (obj) => ({
   combined_name: obj.Combined_Key,
   loc: {
     type: 'Point',
-    coordinates: [obj.Long_, obj.Lat],
+    coordinates: [Number(obj.Long_), Number(obj.Lat)],
   },
 })
 

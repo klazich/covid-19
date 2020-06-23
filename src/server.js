@@ -1,22 +1,34 @@
 import Koa from 'koa'
 import mount from 'koa-mount'
 import graphqlHTTP from 'koa-graphql'
+import gracefulShutdown from 'http-graceful-shutdown'
 
-import { schema } from './graphql/schema'
-import { root } from './graphql/root'
-import { models } from './database'
+import { buildGraphqlSchema, schema } from './graphql'
+import { startDatabase, dropDatabase, closeDatabase, models } from './database'
+import { bulkInsertJHUData } from './database/populate'
 
-export default async function initServer() {
+export async function startServer() {
+  await startDatabase()
+  await dropDatabase()
+  await bulkInsertJHUData()
+
   const app = new Koa()
+
+  // let schema
+  // try {
+  //   schema = await buildGraphqlSchema()
+  // } catch (error) {
+  //   console.error(error)
+  // }
 
   app.use(
     mount(
       '/graphql',
       graphqlHTTP({
         schema,
-        rootValue: root,
         graphiql: true,
         context: { models },
+        pretty: true,
       })
     )
   )
@@ -28,6 +40,14 @@ export default async function initServer() {
   const port = process.env.PORT
 
   app.listen(port, () => {
-    console.log(`listening at http://localhost:${port}`)
+    console.log(`koa server at http://localhost:${port}`)
+    console.log(`graphiql playground at http://localhost:${port}/graphql`)
+  })
+
+  process.on('SIGINT', async () => {
+    gracefulShutdown(app)
+    await closeDatabase()
   })
 }
+
+startServer()
