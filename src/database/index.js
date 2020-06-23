@@ -15,8 +15,6 @@ const getDatabaseUri = () =>
 export async function startDatabase() {
   const uri = getDatabaseUri()
 
-  console.log(process.env.NODE_ENV, uri)
-
   const options = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
