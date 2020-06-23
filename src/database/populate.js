@@ -102,8 +102,8 @@ export async function bulkInsertJHUData() {
   try {
     console.log('Creating the metadata document...')
     await Metadata.create({
-      states: [...states],
-      counties: [...counties],
+      states: [...states].sort(),
+      counties: [...counties].sort(),
       uids: [...uids],
       first_date: firstDate,
       last_date: lastDate,
