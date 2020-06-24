@@ -1,53 +1,51 @@
-import Koa from 'koa'
-import mount from 'koa-mount'
-import graphqlHTTP from 'koa-graphql'
-import gracefulShutdown from 'http-graceful-shutdown'
+import { GraphQLServer } from 'graphql-yoga'
 
 import { buildGraphqlSchema, schema } from './graphql'
 import { startDatabase, dropDatabase, closeDatabase, models } from './database'
 import { bulkInsertJHUData } from './database/populate'
 
-export async function startServer() {
+const buildServer = (options = {}) =>
+  new GraphQLServer({
+    schema,
+    context: { models },
+    ...options,
+  })
+
+async function startServer(server = buildServer(), options = {}) {
+  const port = options.port ?? process.env.PORT
+  try {
+    const result = await server.start({
+      port,
+      endpoint: '/graphql',
+      playground: '/playground',
+      ...options,
+    })
+    console.log(`GraphQL server started, listening on port ${port}.`)
+    return result
+  } catch (error) {
+    console.log('Could not start GraphQL server')
+    console.error(error)
+  }
+}
+
+export async function start() {
   await startDatabase()
   await dropDatabase()
   await bulkInsertJHUData()
 
-  const app = new Koa()
-
-  // let schema
-  // try {
-  //   schema = await buildGraphqlSchema()
-  // } catch (error) {
-  //   console.error(error)
-  // }
-
-  app.use(
-    mount(
-      '/graphql',
-      graphqlHTTP({
-        schema,
-        graphiql: true,
-        context: { models },
-        pretty: true,
-      })
-    )
-  )
-
-  app.on('error', (err) => {
-    log.error('server error', err)
-  })
-
-  const port = process.env.PORT
-
-  app.listen(port, () => {
-    console.log(`koa server at http://localhost:${port}`)
-    console.log(`graphiql playground at http://localhost:${port}/graphql`)
-  })
+  const server = await startServer()
 
   process.on('SIGINT', async () => {
-    gracefulShutdown(app)
-    await closeDatabase()
+    server.close(async (err) => {
+      if (err) {
+        console.log('Could not close GraphQL server')
+        console.error(err)
+      } else {
+        console.log('Successfully closed GraphQL server')
+      }
+      await closeDatabase()
+    })
   })
 }
 
-startServer()
+start()
