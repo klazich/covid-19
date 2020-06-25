@@ -1,26 +1,34 @@
 {
-  "name": "covid-19-hotspots",
+  "name": "covid-19",
   "version": "1.0.0",
   "description": "",
   "private": true,
-  "main": "lib/index.js",
-  "keywords": [],
+  "main": "lib/server.js",
+  "keywords": ["covid-19", "api"],
   "author": "Kevin Lazich <dev@kevinlazich.com>",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/klazich/..."
+    "url": "https://github.com/klazich/covid-19"
   },
   "scripts": {
     "build": "babel src -d lib",
-    "precommit": "npm run format",
     "commit": "commit",
+    "predev": "npm run build",
+    "dev": "node lib/server.js",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css,md,mdx}\"",
     "prestart": "npm run build",
-    "start": "node lib/index.js"
+    "start": "node -r dotenv/config lib/server.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
+    "graphql": "^15.0.0",
+    "graphql-scalars": "^1.1.7",
+    "graphql-tools": "^6.0.10",
+    "graphql-yoga": "^1.18.3",
+    "mongodb": "^3.5.9",
+    "mongoose": "^5.9.17",
     "papaparse": "^5.2.0"
   },
   "devDependencies": {
@@ -40,6 +48,6 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,json,css,md,mdx}": "prettier --write"
+    "src/**/*.{js,jsx,json,css,md,mdx}": "prettier --write"
   }
 }

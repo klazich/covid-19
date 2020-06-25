@@ -1,0 +1,16 @@
+# import Entry from 'types.graphql'
+
+type Query {
+  entries(input: EntriesInput!): [Entry]
+}
+
+input EntriesInput {
+  uid: Int
+  fips: Int
+  stateCounty: StateCounty
+}
+
+type StateCounty {
+  state: String!
+  county: String!
+}
