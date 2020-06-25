@@ -1,15 +1,15 @@
 {
-  "name": "covid-19-hotspots",
+  "name": "covid-19",
   "version": "1.0.0",
   "description": "",
   "private": true,
   "main": "lib/server.js",
-  "keywords": [],
+  "keywords": ["covid-19", "api"],
   "author": "Kevin Lazich <dev@kevinlazich.com>",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/klazich/..."
+    "url": "https://github.com/klazich/covid-19"
   },
   "scripts": {
     "build": "babel src -d lib",
