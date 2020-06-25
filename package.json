@@ -14,6 +14,8 @@
   "scripts": {
     "build": "babel src -d lib",
     "commit": "commit",
+    "predev": "npm run build",
+    "dev": "node lib/server.js",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css,md,mdx}\"",
     "prestart": "npm run build",
     "start": "node -r dotenv/config lib/server.js"
