@@ -1,27 +1,34 @@
 import { GraphQLServer } from 'graphql-yoga'
 
-import { buildGraphqlSchema, schema } from './graphql'
-import { startDatabase, dropDatabase, closeDatabase, models } from './database'
-import { bulkInsertJHUData } from './database/populate'
+import { schema } from './graphql'
+import {
+  startDatabase,
+  dropDatabase,
+  closeDatabase,
+  models,
+  bulkInsertJHUData,
+} from './database'
 
-const buildServer = (options = {}) =>
-  new GraphQLServer({
+process.env.NODE_ENV = process.env.NODE_ENV ?? 'development'
+
+const PORT = process.env.PORT ?? 3000
+
+async function startServer(options = {}) {
+  const server = new GraphQLServer({
     schema,
     context: { models },
-    ...options,
   })
 
-async function startServer(server = buildServer(), options = {}) {
-  const port = options.port ?? process.env.PORT
   try {
-    const result = await server.start({
-      port,
+    const started = await server.start({
+      port: PORT,
       endpoint: '/graphql',
       playground: '/playground',
       ...options,
     })
-    console.log(`GraphQL server started, listening on port ${port}.`)
-    return result
+
+    console.log(`GraphQL server started, listening on port ${PORT}.`)
+    return started
   } catch (error) {
     console.log('Could not start GraphQL server')
     console.error(error)
@@ -30,8 +37,9 @@ async function startServer(server = buildServer(), options = {}) {
 
 export async function start() {
   await startDatabase()
-  await dropDatabase()
-  await bulkInsertJHUData()
+
+  // await dropDatabase()
+  // await bulkInsertJHUData()
 
   const server = await startServer()
 
