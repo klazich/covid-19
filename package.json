@@ -4,7 +4,10 @@
   "description": "",
   "private": true,
   "main": "lib/server.js",
-  "keywords": ["covid-19", "api"],
+  "keywords": [
+    "covid-19",
+    "api"
+  ],
   "author": "Kevin Lazich <dev@kevinlazich.com>",
   "license": "MIT",
   "repository": {
@@ -23,23 +26,23 @@
   "dependencies": {
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
-    "graphql": "^15.0.0",
-    "graphql-scalars": "^1.1.7",
-    "graphql-tools": "^6.0.10",
+    "graphql": "^15.1.0",
+    "graphql-scalars": "^1.2.1",
+    "graphql-tools": "^6.0.11",
     "graphql-yoga": "^1.18.3",
     "mongodb": "^3.5.9",
-    "mongoose": "^5.9.17",
+    "mongoose": "^5.9.20",
     "papaparse": "^5.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
-    "@commitlint/prompt-cli": "^8.3.5",
+    "@babel/cli": "^7.10.3",
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@commitlint/cli": "^9.0.1",
+    "@commitlint/config-conventional": "^9.0.1",
+    "@commitlint/prompt-cli": "^9.0.1",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.6",
+    "lint-staged": "^10.2.11",
     "prettier": "2.0.5"
   },
   "husky": {
