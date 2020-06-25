@@ -1,9 +1,7 @@
-import { join } from 'path'
-
-import { loadSchema } from '@graphql-tools/load'
-import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
+// import { loadSchemaSync } from '@graphql-tools/load'
+// import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 import {
-  addResolversToSchema,
+  // addResolversToSchema,
   makeExecutableSchema,
 } from '@graphql-tools/schema'
 
@@ -11,20 +9,13 @@ import { resolvers } from './resolvers'
 
 const typeDefs = `
 scalar Date
-
-# type Query {
-#   entriesByStateAndCounty(state: String!, county: String!): [Entry]
-#   entriesByUID(uid: Int!): [Entry]
-#   entriesByFIPS(fips: Int!): [Entry]
-#   # uids: [Int]
-#   counties: [String]
-# }
+scalar ObjectID
 
 type Query {
-  entries(input: EntriesInput!): [Entry]
+  entries(where: EntriesWhereInput!): [Entry!]
 }
 
-input EntriesInput {
+input EntriesWhereInput {
   uid: Int
   fips: Int
   state: String
@@ -32,8 +23,8 @@ input EntriesInput {
 }
 
 type Entry {
-  id: ID!
-  uid: Int!
+  id: ObjectID!
+  uid: Int
   country_iso2: String
   country_iso3: String!
   country_code: Int!
@@ -48,15 +39,6 @@ type Entry {
   confirmed: Int!
 }
 
-type Metadata {
-  id: ID!
-  states: [String!]!
-  counties: [String!]!
-  uids: [Int!]!
-  firstDate: String!
-  lastDate: String!
-}
-
 type Location {
   type: String!
   coordinates: [Float!]!
@@ -67,16 +49,3 @@ export const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 })
-
-export async function buildGraphqlSchema() {
-  const schema = await loadSchema(join(__dirname, 'types.graphql'), {
-    loaders: [new GraphQLFileLoader()],
-  })
-
-  const withResolvers = addResolversToSchema({
-    schema,
-    resolvers,
-  })
-
-  return withResolvers
-}
