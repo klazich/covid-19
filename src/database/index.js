@@ -3,28 +3,24 @@ import mongoose from 'mongoose'
 import Entry from './models/entry'
 import Metadata from './models/metadata'
 
-export const models = { Entry, Metadata }
-
 mongoose.Promise = Promise
 
-const getDatabaseUri = () =>
-  process.env.NODE_ENV === 'development'
-    ? process.env.DEVELOPMENT_DB_URL
-    : process.env.PRODUCTION_DB_URL
+export const models = { Entry, Metadata }
+export { bulkInsertJHUData } from './populate'
 
-export async function startDatabase() {
-  const uri = getDatabaseUri()
-
-  const options = {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  }
+export async function startDatabase(options = {}) {
+  const uri =
+    process.env.PRODUCTION_DB_URL ?? 'mongodb://localhost:27017/covid-19'
 
   try {
-    await mongoose.connect(uri, options)
+    await mongoose.connect(uri, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      ...options,
+    })
+
     console.log(`Successfully connected to MongoDB server`)
-    console.log(`  URI: ${uri}`)
-    console.log(`  DATABASE: ${mongoose.connection.name}`)
   } catch (error) {
     console.log('Failed to connect to MongoDB server')
     console.error(error)
