@@ -4,7 +4,10 @@
   "description": "",
   "private": true,
   "main": "lib/server.js",
-  "keywords": ["covid-19", "api"],
+  "keywords": [
+    "covid-19",
+    "api"
+  ],
   "author": "Kevin Lazich <dev@kevinlazich.com>",
   "license": "MIT",
   "repository": {
