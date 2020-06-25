@@ -1,9 +1,14 @@
 import { remoteCsvParser } from '../parser'
 import Entry from './models/entry'
-import Metadata from './models/metadata'
+
+const JHU_FIPS_LOOKUP_URL =
+  'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
+const JHU_TIME_SERIES_DATA_URL =
+  'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv'
 
 async function fetchJHUPopulationMap() {
-  const url = process.env.JHU_FIPS_LOOKUP_URL
+  const url = JHU_FIPS_LOOKUP_URL
+
   const iterJHUPopulationData = await remoteCsvParser(url)
 
   // The JHU fips lookup table includes statistics for every country in the
@@ -28,11 +33,11 @@ const parseDate = (str) =>
 
 // Map the original keys to there mongo schema equivalent
 const cleanKeys = (obj) => ({
-  uid: obj.UID,
+  uid: Number(obj.UID),
   country_iso2: obj.iso2,
   country_iso3: obj.iso3,
-  country_code: obj.code3,
-  fips: obj.FIPS,
+  country_code: Number(obj.code3),
+  fips: Number(obj.FIPS),
   county: obj.Admin2,
   state: obj.Province_State,
   country: obj.Country_Region,
@@ -59,7 +64,7 @@ async function cleanJHUData() {
         yield {
           ...cleaned,
           date: new Date(year, month - 1, day), // Month is 0 indexed
-          confirmed: obj[key],
+          confirmed: Number(obj[key]),
         }
       }
     }
@@ -67,7 +72,8 @@ async function cleanJHUData() {
 }
 
 async function* iterJHUData() {
-  const url = process.env.JHU_TIME_SERIES_DATA_URL
+  const url = JHU_TIME_SERIES_DATA_URL
+
   const clean = await cleanJHUData()
 
   for await (const obj of await remoteCsvParser(url)) {
@@ -78,21 +84,8 @@ async function* iterJHUData() {
 export async function bulkInsertJHUData(limit = Infinity) {
   let bulk = Entry.collection.initializeUnorderedBulkOp()
 
-  // Variables for the metadata collection
-  const states = new Set()
-  const counties = new Set()
-  const uids = new Set()
-  let firstDate = null
-  let lastDate = null
-
   for await (const doc of iterJHUData()) {
     if (bulk.length >= limit) break
-
-    if (doc.state) states.add(doc.state)
-    if (doc.county) counties.add(doc.county)
-    uids.add(doc.uid)
-    if (firstDate === null) firstDate = doc.date
-    lastDate = doc.date
 
     bulk.insert(doc) // Insert new document for bulk insert op
   }
@@ -102,20 +95,6 @@ export async function bulkInsertJHUData(limit = Infinity) {
     await bulk.execute() // Execute the bulk insert op
   } catch (error) {
     console.log('Could not insert new documents')
-    console.error(error)
-  }
-
-  try {
-    console.log('Creating the metadata document...')
-    await Metadata.create({
-      states: [...states].sort(),
-      counties: [...counties].sort(),
-      uids: [...uids],
-      first_date: firstDate,
-      last_date: lastDate,
-    })
-  } catch (error) {
-    console.log('Could not create the metadata document')
     console.error(error)
   }
 }
