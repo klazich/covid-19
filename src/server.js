@@ -3,16 +3,20 @@ import { GraphQLServer } from 'graphql-yoga'
 import { schema } from './graphql'
 import {
   startDatabase,
-  dropDatabase,
+  // dropDatabase,
   closeDatabase,
   models,
-  bulkInsertJHUData,
+  // bulkInsertJHUData,
 } from './database'
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'development'
 
 const PORT = process.env.PORT ?? 3000
 
+/**
+ * Start a graphql server
+ * @param {import('graphql-yoga/dist/types').Props} options
+ */
 async function startServer(options = {}) {
   const server = new GraphQLServer({
     schema,
