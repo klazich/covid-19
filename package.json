@@ -17,9 +17,11 @@
   "scripts": {
     "build": "babel src -d lib",
     "commit": "commit",
-    "predev": "npm run build",
+    "predevelop": "npm run build",
     "develop": "node lib/server.js",
-    "format": "prettier --write \"src/**/*.{js,jsx,json,css,md,mdx}\"",
+    "format": "prettier --write \"src/**/*.{js,json,md}\"",
+    "lint": "eslint . --ext .js --cache",
+    "lint/fix": "npm run lint -- --fix",
     "prestart": "npm run build",
     "start": "node -r dotenv/config lib/server.js"
   },
@@ -55,7 +57,6 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "src/**/*.{js,jsx,json,css,md,mdx}": "prettier --write"
+    "src/**/*": "eslint . --ext .js --cache --fix"
   }
 }
