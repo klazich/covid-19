@@ -17,7 +17,7 @@ const PORT = process.env.PORT ?? 3000
  * Start a graphql server
  * @param {import('graphql-yoga/dist/types').Props} options
  */
-async function startServer(options = {}) {
+export async function startServer(options = {}) {
   const server = new GraphQLServer({
     schema,
     context: { models },
@@ -92,4 +92,4 @@ export async function start() {
   })
 }
 
-start()
+// start()
