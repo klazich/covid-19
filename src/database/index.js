@@ -1,23 +1,20 @@
 import mongoose from 'mongoose'
 
+mongoose.Promise = Promise
+
 import Entry from './models/entry'
 import Metadata from './models/metadata'
 
-mongoose.Promise = Promise
-
 export const models = { Entry, Metadata }
-export { bulkInsertJHUData } from './populate'
 
-export async function startDatabase(options = {}) {
-  const uri =
-    process.env.PRODUCTION_DB_URL ?? 'mongodb://localhost:27017/covid-19'
+export async function openDatabaseConnection() {
+  const url = process.env.MONGODB_URL
 
   try {
-    await mongoose.connect(uri, {
+    await mongoose.connect(url, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
       useCreateIndex: true,
-      ...options,
     })
 
     console.log(`Successfully connected to MongoDB server`)
@@ -27,7 +24,7 @@ export async function startDatabase(options = {}) {
   }
 }
 
-export async function closeDatabase(force = false) {
+export async function closeDatabaseConnection(force = false) {
   try {
     await mongoose.connection.close(force)
     console.log('Successfully closed connection to MongoDB server')
