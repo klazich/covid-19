@@ -1,13 +1,13 @@
 import { model, Schema } from 'mongoose'
 
 const metadataSchema = Schema({
-  states: {
+  states_counties: {
     type: [String],
     required: true,
   },
 
-  counties: {
-    type: [String],
+  fips: {
+    type: [Number],
     required: true,
   },
 

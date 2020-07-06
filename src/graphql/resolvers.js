@@ -6,13 +6,7 @@ export const resolvers = {
   Query: {
     entries: async (_, { where }, { models }) => {
       const { Entry } = models
-      console.log(where)
-      const test = await Entry.findOne(where)
-      console.log(test)
       return await Entry.find(where)
     },
   },
-  // Entry: {
-  //   id: (parent) => parent.__id,
-  // },
 }

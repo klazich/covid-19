@@ -1,5 +1,5 @@
-import { remoteCsvParser } from '../parser'
-import Entry from './models/entry'
+import { remoteCsvParser } from '../../parser'
+import Entry from '../models/entry'
 
 const JHU_FIPS_LOOKUP_URL =
   'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
@@ -31,7 +31,7 @@ const isDate = (str) => /\d?\d\/\d\d\/\d\d/.test(str)
 const parseDate = (str) =>
   str.split(/\//g).map((v, i) => parseInt(i === 2 ? `20${v}` : v, 10))
 
-// Map the original keys to there mongo schema equivalent
+// Map the original keys to there mongodb schema equivalent
 const cleanKeys = (obj) => ({
   uid: Number(obj.UID),
   country_iso2: obj.iso2,
@@ -82,6 +82,8 @@ async function* iterJHUData() {
 }
 
 export async function bulkInsertJHUData(limit = Infinity) {
+  // Use the MongoDB Bulk API for document creation
+  // See: https://stackoverflow.com/questions/37379180/bulk-insert-in-mongodb-using-mongoose/37379532
   let bulk = Entry.collection.initializeUnorderedBulkOp()
 
   for await (const doc of iterJHUData()) {

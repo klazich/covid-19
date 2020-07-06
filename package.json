@@ -17,19 +17,23 @@
   "scripts": {
     "build": "babel src -d lib",
     "commit": "commit",
-    "predev": "npm run build",
-    "dev": "node lib/server.js",
-    "format": "prettier --write \"src/**/*.{js,jsx,json,css,md,mdx}\"",
+    "format": "prettier --write \"src/**/*.{js,json,md}\"",
+    "postinstall": "shx cp .env.example .env",
+    "lint": "eslint src/**/* --ext .js --cache",
+    "lint:fix": "npm run lint -- --fix",
+    "preseed": "npm run build",
+    "seed": "node -r dotenv-safe/config lib/database/seed/index.js",
     "prestart": "npm run build",
-    "start": "node -r dotenv/config lib/server.js"
+    "start": "node -r dotenv-safe/config lib/server.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "dotenv": "^8.2.0",
+    "dotenv-safe": "^8.2.0",
     "graphql": "^15.1.0",
     "graphql-scalars": "^1.2.1",
     "graphql-tools": "^6.0.11",
     "graphql-yoga": "^1.18.3",
+    "minimist": "^1.2.5",
     "mongodb": "^3.5.9",
     "mongoose": "^5.9.20",
     "papaparse": "^5.2.0"
@@ -41,9 +45,14 @@
     "@commitlint/cli": "^9.0.1",
     "@commitlint/config-conventional": "^9.0.1",
     "@commitlint/prompt-cli": "^9.0.1",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.3.1",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "prettier": "2.0.5"
+    "prettier": "2.0.5",
+    "shx": "^0.3.2"
   },
   "husky": {
     "hooks": {
@@ -51,6 +60,6 @@
     }
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,json,css,md,mdx}": "prettier --write"
+    "src/**/*": "eslint . --ext .js --cache --fix"
   }
 }

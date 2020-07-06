@@ -1,51 +1,38 @@
-// import { loadSchemaSync } from '@graphql-tools/load'
-// import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
-import {
-  // addResolversToSchema,
-  makeExecutableSchema,
-} from '@graphql-tools/schema'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 
+import { typeDefs } from './typeDefs'
 import { resolvers } from './resolvers'
-
-const typeDefs = `
-scalar Date
-scalar ObjectID
-
-type Query {
-  entries(where: EntriesWhereInput!): [Entry!]
-}
-
-input EntriesWhereInput {
-  uid: Int
-  fips: Int
-  state: String
-  county: String
-}
-
-type Entry {
-  id: ObjectID!
-  uid: Int
-  country_iso2: String
-  country_iso3: String!
-  country_code: Int!
-  fips: Int!
-  county: String
-  state: String
-  country: String!
-  combined_name: String!
-  population: Int!
-  loc: Location!
-  date: Date!
-  confirmed: Int!
-}
-
-type Location {
-  type: String!
-  coordinates: [Float!]!
-}
-`
 
 export const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 })
+
+export const defaultPlaygroundQuery = `{
+  # The 3 examples below show the different ways to query the endpoint.
+  # Each one should return the same data.
+
+  # Query database by a location's state and county names:
+  example1: entries(where: { state: "Kentucky", county: "Jefferson" }) {
+    uid
+    fips
+    date
+    confirmed
+  }
+
+  # Query database by a location's UID number:
+  example2: entries(where: { uid: 84021111 }) {
+    uid
+    fips
+    date
+    confirmed
+  }
+
+  # Query database by a location's FIPS number:
+  example3: entries(where: { fips: 21111 }) {
+    uid
+    fips
+    date
+    confirmed
+  }
+}`

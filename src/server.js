@@ -1,19 +1,15 @@
 import { GraphQLServer } from 'graphql-yoga'
 
-import { schema } from './graphql'
+import { schema, defaultPlaygroundQuery } from './graphql'
 import {
-  startDatabase,
-  dropDatabase,
-  closeDatabase,
+  openDatabaseConnection,
+  closeDatabaseConnection,
   models,
-  bulkInsertJHUData,
 } from './database'
 
-process.env.NODE_ENV = process.env.NODE_ENV ?? 'development'
+const { PORT } = process.env
 
-const PORT = process.env.PORT ?? 3000
-
-async function startServer(options = {}) {
+export async function startServer() {
   const server = new GraphQLServer({
     schema,
     context: { models },
@@ -24,11 +20,14 @@ async function startServer(options = {}) {
       port: PORT,
       endpoint: '/graphql',
       playground: '/playground',
-      ...options,
+      defaultPlaygroundQuery,
     })
 
     console.log(`GraphQL server started, listening on port ${PORT}.`)
-    return started
+    if (process.env.NODE_ENV === 'development')
+      console.log(`Graphql playground at: http://localhost:${PORT}/playground`)
+
+    return started // Return the server instance
   } catch (error) {
     console.log('Could not start GraphQL server')
     console.error(error)
@@ -36,24 +35,21 @@ async function startServer(options = {}) {
 }
 
 export async function start() {
-  await startDatabase()
-
-  // await dropDatabase()
-  // await bulkInsertJHUData()
-
+  await openDatabaseConnection()
   const server = await startServer()
 
   process.on('SIGINT', async () => {
-    server.close(async (err) => {
-      if (err) {
+    // Try to shutdown the graphql server
+    server.close(async (error) => {
+      if (error) {
         console.log('Could not close GraphQL server')
-        console.error(err)
+        console.error(error)
       } else {
         console.log('Successfully closed GraphQL server')
       }
-      await closeDatabase()
+      await closeDatabaseConnection() // Try to close db connection
     })
   })
 }
 
-start()
+start() // Spin up the server
