@@ -22,9 +22,9 @@
     "lint": "eslint src/**/* --ext .js --cache",
     "lint:fix": "npm run lint -- --fix",
     "preseed": "npm run build",
-    "seed": "node -r dotenv-safe/config lib/database/seed.js",
+    "seed": "node -r dotenv-safe/config lib/database/seed",
     "prestart": "npm run build",
-    "start": "node -r dotenv-safe/config lib/server.js"
+    "start": "node -r dotenv-safe/config lib/server"
   },
   "dependencies": {
     "axios": "^0.19.2",
