@@ -22,16 +22,14 @@
     "lint": "eslint src/**/* --ext .js --cache",
     "lint:fix": "npm run lint -- --fix",
     "preseed": "npm run build",
-    "seed": "node -r dotenv-safe/config lib/database/seed/index.js",
+    "seed": "node -r dotenv-safe/config lib/database/seed",
     "prestart": "npm run build",
-    "start": "node -r dotenv-safe/config lib/server.js"
+    "start": "node -r dotenv-safe/config lib/server"
   },
   "dependencies": {
     "axios": "^0.19.2",
     "dotenv-safe": "^8.2.0",
-    "graphql": "^15.1.0",
     "graphql-scalars": "^1.2.1",
-    "graphql-tools": "^6.0.11",
     "graphql-yoga": "^1.18.3",
     "minimist": "^1.2.5",
     "mongodb": "^3.5.9",

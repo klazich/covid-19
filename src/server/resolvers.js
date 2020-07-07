@@ -1,12 +1,15 @@
-import { makeExecutableSchema } from '@graphql-tools/schema'
+import { DateResolver, ObjectIDResolver } from 'graphql-scalars'
 
-import { typeDefs } from './typeDefs'
-import { resolvers } from './resolvers'
-
-export const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-})
+export const resolvers = {
+  Date: DateResolver,
+  ObjectID: ObjectIDResolver,
+  Query: {
+    entries: async (_, { where }, { models }) => {
+      const { Entry } = models
+      return await Entry.find(where)
+    },
+  },
+}
 
 export const defaultPlaygroundQuery = `{
   # The 3 examples below show the different ways to query the endpoint.

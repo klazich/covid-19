@@ -56,7 +56,7 @@ You can pass a limit option to the script to limit how many documents are create
 > npm run seed -- --limit=10000
 ```
 
-> This can be helpful when debugging database connection issues as seeding the database with the full dataset will create over 350000 documents and can take up to 30 seconds.
+> This can be helpful when debugging database connection issues as seeding the database with the full dataset will create over 500,000 documents and can take up to 30 seconds.
 
 ### Starting the GraphQL Server
 

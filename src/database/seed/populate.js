@@ -1,4 +1,4 @@
-import { remoteCsvParser } from '../../parser'
+import { remoteCsvParser } from './parser'
 import Entry from '../models/entry'
 
 const JHU_FIPS_LOOKUP_URL =
@@ -27,7 +27,7 @@ async function fetchJHUPopulationMap() {
   return populationMap
 }
 
-const isDate = (str) => /\d?\d\/\d\d\/\d\d/.test(str)
+const isDate = (str) => /\d\d?\/\d\d?\/\d\d/.test(str)
 const parseDate = (str) =>
   str.split(/\//g).map((v, i) => parseInt(i === 2 ? `20${v}` : v, 10))
 
