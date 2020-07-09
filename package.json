@@ -27,10 +27,11 @@
     "start": "node -r dotenv-safe/config lib/server"
   },
   "dependencies": {
+    "apollo-server": "^2.15.1",
     "axios": "^0.19.2",
     "dotenv-safe": "^8.2.0",
+    "graphql": "^15.3.0",
     "graphql-scalars": "^1.2.1",
-    "graphql-yoga": "^1.18.3",
     "minimist": "^1.2.5",
     "mongodb": "^3.5.9",
     "mongoose": "^5.9.20",
