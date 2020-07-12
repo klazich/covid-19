@@ -20,7 +20,7 @@ async function fetchJHUPopulationMap() {
   for await (const data of iterJHUPopulationData) {
     if (countryCodes.has(data.code3)) {
       const { UID, Population } = data
-      populationMap.set(UID, Number(Population))
+      populationMap.set(Number(UID), Number(Population))
     }
   }
 

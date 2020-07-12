@@ -1,55 +1,56 @@
-import { GraphQLServer } from 'graphql-yoga'
+import { ApolloServer } from 'apollo-server'
 
 import {
   openDatabaseConnection,
   closeDatabaseConnection,
   models,
 } from '../database'
-import { resolvers, defaultPlaygroundQuery } from './resolvers'
+import { resolvers } from './resolvers'
 
-const graphQLServer = new GraphQLServer({
-  typeDefs: './src/server/types.graphql',
+import { typeDefs, defaultPlaygroundQuery } from './schema'
+
+const apolloServer = new ApolloServer({
+  typeDefs,
   resolvers,
   context: { models },
+  engine: {
+    reportSchema: true,
+    graphVariant: 'current',
+  },
+  playground: {
+    tabs: [
+      {
+        endpoint: 'http://localhost:4000/',
+        query: defaultPlaygroundQuery,
+      },
+    ],
+  },
 })
 
 async function startGraphQLServer() {
-  await openDatabaseConnection()
-
-  let server // Will hold the server instance
+  await openDatabaseConnection() // Open a connection to the mongodb database
 
   try {
-    server = await graphQLServer.start(
-      {
-        // tracing: true,
-        port: process.env.PORT,
-        playground: '/playground',
-        defaultPlaygroundQuery,
-      },
-      ({ port }) => {
-        console.log(`GraphQL server started, listening on port ${port}.`)
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`GraphQL playground at endpoint: /playground`)
-        }
-      }
-    )
-  } catch (error) {
-    console.log('Could not start GraphQL server')
-    console.error(error)
-  }
+    const { url, server } = await apolloServer.listen({
+      port: process.env.PORT,
+    })
 
-  process.on('SIGINT', async () => {
-    // Try to shutdown the graphql server
-    try {
-      await server.close()
-      console.log('Successfully closed GraphQL server')
-    } catch (error) {
-      console.log('Could not close GraphQL server')
-      console.error(error)
-    } finally {
-      await closeDatabaseConnection() // Try to close db connection
-    }
-  })
+    console.log(`GraphQL server ready at ${url}`)
+
+    process.on('SIGINT', async () => {
+      // Try to shutdown the graphql server
+      server.close(async (err) => {
+        if (err) {
+          console.log('Could not close GraphQL server')
+          console.error(err)
+        } else console.log('Successfully closed GraphQL server')
+        await closeDatabaseConnection() // Try to close db connection
+      })
+    })
+  } catch (err) {
+    console.log('Could not start GraphQL server')
+    console.error(err)
+  }
 }
 
 startGraphQLServer() // Spin up the server
