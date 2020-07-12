@@ -15,6 +15,7 @@
     "url": "https://github.com/klazich/covid-19"
   },
   "scripts": {
+    "prebuild": "shx rm -r lib",
     "build": "babel src -d lib",
     "commit": "commit",
     "format": "prettier --write \"src/**/*.{js,json,md}\"",
