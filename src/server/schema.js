@@ -6,6 +6,7 @@ export const typeDefs = gql`
 
   type Query {
     entries(where: EntriesWhereInput!): [Entry!]
+    entry(id: ObjectID!): Entry
   }
 
   input EntriesWhereInput {
@@ -21,26 +22,6 @@ export const typeDefs = gql`
     "The name of the County within the USA"
     county: String
   }
-
-  # fragment entryFields on Entry {
-  #   id
-  #   uid
-  #   country_iso2
-  #   country_iso3
-  #   country_code
-  #   fips
-  #   county
-  #   state
-  #   country
-  #   combined_name
-  #   population
-  #   loc {
-  #     type
-  #     coordinates
-  #   }
-  #   date
-  #   confirmed
-  # }
 
   type Entry {
     id: ObjectID!

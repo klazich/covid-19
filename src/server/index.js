@@ -13,6 +13,10 @@ const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
   context: { models },
+  engine: {
+    reportSchema: true,
+    graphVariant: 'current',
+  },
   playground: {
     tabs: [
       {

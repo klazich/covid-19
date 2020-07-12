@@ -8,5 +8,9 @@ export const resolvers = {
       const { Entry } = models
       return await Entry.find(where)
     },
+    entry: async (_, { id }, { models }) => {
+      const { Entry } = models
+      return await Entry.findById(id)
+    },
   },
 }
