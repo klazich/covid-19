@@ -17,17 +17,17 @@ const apolloServer = new ApolloServer({
     reportSchema: true,
     graphVariant: 'current',
   },
-  playground: {
-    tabs: [
-      {
-        endpoint:
-          process.env.NODE_ENV === 'production'
-            ? 'https://covid-19-73586.herokuapp.com/'
-            : 'http://localhost:4000/',
-        query: defaultPlaygroundQuery,
-      },
-    ],
-  },
+  playground:
+    process.env.NODE_ENV === 'production'
+      ? false
+      : {
+          tabs: [
+            {
+              endpoint: 'http://localhost:4000/',
+              query: defaultPlaygroundQuery,
+            },
+          ],
+        },
 })
 
 async function startGraphQLServer() {
