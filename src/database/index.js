@@ -10,6 +10,8 @@ export const models = { Entry, Metadata }
 export async function openDatabaseConnection() {
   const url = process.env.MONGODB_URL
 
+  console.log(url)
+
   try {
     await mongoose.connect(url, {
       useUnifiedTopology: true,
