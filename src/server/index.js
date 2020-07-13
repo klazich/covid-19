@@ -20,7 +20,10 @@ const apolloServer = new ApolloServer({
   playground: {
     tabs: [
       {
-        endpoint: 'http://localhost:4000/',
+        endpoint:
+          process.env.NODE_ENV === 'production'
+            ? 'https://covid-19-73586.herokuapp.com/'
+            : 'http://localhost:4000/',
         query: defaultPlaygroundQuery,
       },
     ],
