@@ -16,7 +16,7 @@ const apolloServer = new ApolloServer({
   },
   playground:
     process.env.NODE_ENV === 'production'
-      ? false
+      ? false // Don't create playground in production builds.
       : {
           tabs: [
             {
