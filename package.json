@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "private": true,
+  "engines": {
+    "npm": "6.x",
+    "node": "12.x"
+  },
   "main": "lib/server.js",
   "keywords": [
     "covid-19",
