@@ -30,7 +30,7 @@ Clone the repo and install the dependencies through npm.
 
 ### Environment Variables
 
-The graphql server and mongo database require certain environment variables to be set before startup. If they are not defined than the app will fail to start. After running `npm install` a `.env` file should have been created in the project root. Check that it was and that the contents match with text below.
+The graphql server and mongo database require certain environment variables to be set before startup. If they are not defined than the app will fail to start. ~~After running `npm install` a `.env` file should have been created in the project root. Check that it was and that the contents match with text below.~~ Make a copy of the `.env-example` and rename it to `.env` and place it in the root of the project.
 
 ```
 PORT=3000

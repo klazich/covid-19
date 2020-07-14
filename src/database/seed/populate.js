@@ -1,5 +1,7 @@
 import { remoteCsvParser } from './parser'
-import Entry from '../models/entry'
+import { models } from '../models'
+
+const { Entry } = models
 
 const JHU_FIPS_LOOKUP_URL =
   'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'

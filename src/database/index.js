@@ -2,11 +2,6 @@ import mongoose from 'mongoose'
 
 mongoose.Promise = Promise
 
-import Entry from './models/entry'
-import Metadata from './models/metadata'
-
-export const models = { Entry, Metadata }
-
 export async function openDatabaseConnection() {
   const url = process.env.MONGODB_URL
 

@@ -1,10 +1,7 @@
 import { ApolloServer } from 'apollo-server'
 
-import {
-  openDatabaseConnection,
-  closeDatabaseConnection,
-  models,
-} from '../database'
+import { openDatabaseConnection, closeDatabaseConnection } from '../database'
+import { models } from '../database/models'
 import { resolvers } from './resolvers'
 
 import { typeDefs, defaultPlaygroundQuery } from './schema'
@@ -19,7 +16,7 @@ const apolloServer = new ApolloServer({
   },
   playground:
     process.env.NODE_ENV === 'production'
-      ? false
+      ? false // Don't create playground in production builds.
       : {
           tabs: [
             {

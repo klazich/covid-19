@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "private": true,
+  "engines": {
+    "npm": "6.x",
+    "node": "12.x"
+  },
   "main": "lib/server.js",
   "keywords": [
     "covid-19",
@@ -15,16 +19,15 @@
     "url": "https://github.com/klazich/covid-19"
   },
   "scripts": {
-    "build": "babel src -d lib",
+    "build": "shx rm -rf lib && babel src -d lib",
     "commit": "commit",
     "format": "prettier --write \"src/**/*.{js,json,md}\"",
-    "preinstall": "shx cp .env.example .env",
-    "lint": "eslint src/**/* --ext .js --cache",
+    "lint": "eslint src --ext .js --cache",
     "lint:fix": "npm run lint -- --fix",
     "preseed": "npm run build",
     "seed": "node -r dotenv-safe/config lib/database/seed",
     "prestart": "npm run build",
-    "start": "node -r dotenv-safe/config lib/server"
+    "start": "node -r dotenv-safe/config lib/server/index.js"
   },
   "dependencies": {
     "apollo-server": "^2.15.1",
@@ -59,6 +62,6 @@
     }
   },
   "lint-staged": {
-    "src/**/*": "eslint . --ext .js --cache --fix"
+    "*.js": "eslint --cache --fix"
   }
 }
