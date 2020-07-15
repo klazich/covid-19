@@ -27,6 +27,19 @@ const apolloServer = new ApolloServer({
         },
 })
 
+const shutdown = (server) => async () => {
+  // Try to shutdown the graphql server
+  server.close(async (err) => {
+    if (err) {
+      console.log('Could not close GraphQL server')
+      console.error(err)
+    } else {
+      console.log('Successfully closed GraphQL server')
+    }
+    await closeDatabaseConnection() // Try to close db connection
+  })
+}
+
 async function startGraphQLServer() {
   await openDatabaseConnection() // Open a connection to the mongodb database
 
@@ -37,16 +50,8 @@ async function startGraphQLServer() {
 
     console.log(`GraphQL server ready at ${url}`)
 
-    process.on('SIGINT', async () => {
-      // Try to shutdown the graphql server
-      server.close(async (err) => {
-        if (err) {
-          console.log('Could not close GraphQL server')
-          console.error(err)
-        } else console.log('Successfully closed GraphQL server')
-        await closeDatabaseConnection() // Try to close db connection
-      })
-    })
+    process.on('SIGINT', shutdown(server))
+    process.on('SIGTERM', shutdown(server))
   } catch (err) {
     console.log('Could not start GraphQL server')
     console.error(err)
