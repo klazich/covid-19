@@ -88,17 +88,32 @@ export async function bulkInsertJHUData(limit = Infinity) {
   // See: https://stackoverflow.com/questions/37379180/bulk-insert-in-mongodb-using-mongoose/37379532
   let bulk = Entry.collection.initializeUnorderedBulkOp()
 
+  const MAX_LENGTH = 100000 // Limit bulk inserts to 100000 documents
+
   for await (const doc of iterJHUData()) {
+    bulk.insert(doc) // Insert new document for bulk insert op
+
     if (bulk.length >= limit) break
 
-    bulk.insert(doc) // Insert new document for bulk insert op
+    if (bulk.length >= MAX_LENGTH) {
+      console.log(`Inserting ${bulk.length} new documents...`)
+
+      try {
+        await bulk.execute() // Execute the bulk insert op for chunk
+      } catch (err) {
+        console.log('Could not insert new documents')
+        console.error(err)
+      } finally {
+        bulk = Entry.collection.initializeUnorderedBulkOp()
+      }
+    }
   }
 
   try {
     console.log(`Inserting ${bulk.length} new documents...`)
-    await bulk.execute() // Execute the bulk insert op
-  } catch (error) {
+    await bulk.execute() // Execute the bulk insert op for the rest
+  } catch (err) {
     console.log('Could not insert new documents')
-    console.error(error)
+    console.error(err)
   }
 }
