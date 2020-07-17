@@ -1,7 +1,7 @@
 {
   "name": "covid-19",
   "version": "1.0.0",
-  "description": "",
+  "description": "A GraphQL server for COVID-19 time series data for counties in the United States.",
   "private": true,
   "engines": {
     "npm": "6.x",
