@@ -89,11 +89,13 @@ export async function bulkInsertJHUData(limit = Infinity) {
   let bulk = Entry.collection.initializeUnorderedBulkOp()
 
   const MAX_LENGTH = 100000 // Limit bulk inserts to 100000 documents
+  let insertCount = 0
 
   for await (const doc of iterJHUData()) {
     bulk.insert(doc) // Insert new document for bulk insert op
+    insertCount += 1
 
-    if (bulk.length >= limit) break
+    if (insertCount >= limit) break
 
     if (bulk.length >= MAX_LENGTH) {
       console.log(`Inserting ${bulk.length} new documents...`)
