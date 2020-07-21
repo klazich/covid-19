@@ -8,7 +8,42 @@ The COVID-19 data is sourced from the [COVID-19 Data Repository by the Center fo
 
 ## Querying the Production Server
 
-- TODO
+### GET request
+
+```http
+GET /?query={entries(where:{fips:21111}){id,combined_name,date,confirmed}} HTTP/1.1
+Host: covid-19-73586.herokuapp.com
+Content-Type: application/json
+```
+
+### POST request with variables
+
+```http
+POST / HTTP/1.1
+Host: covid-19-73586.herokuapp.com
+Content-Type: application/json
+
+{
+    "query": "query entries($input: EntriesWhereInput!) {
+        entries(where: $input) {
+            id
+            fips
+            combined_name
+            loc {
+                coordinates
+            }
+            date
+            confirmed
+        }
+    }",
+    "variables": {
+        "input": {
+            "state": "Kentucky",
+            "county":"Jefferson"
+        }
+    }
+}
+```
 
 ## Local Setup
 
