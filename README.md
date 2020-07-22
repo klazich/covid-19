@@ -11,7 +11,7 @@ The COVID-19 data is sourced from the [COVID-19 Data Repository by the Center fo
 ### GET request
 
 ```http
-GET /?query={entries(where:{fips:21111}){id,combined_name,date,confirmed}} HTTP/1.1
+GET /?query={entries(where:{fips:21111}){id,combined_name,loc{coordinates},date,confirmed}} HTTP/1.1
 Host: covid-19-73586.herokuapp.com
 Content-Type: application/json
 ```
@@ -27,7 +27,6 @@ Content-Type: application/json
     "query": "query entries($input: EntriesWhereInput!) {
         entries(where: $input) {
             id
-            fips
             combined_name
             loc {
                 coordinates
@@ -57,7 +56,7 @@ Content-Type: application/json
 
 Clone the repo and install the dependencies through npm.
 
-```
+```shell
 > git clone https://github.com/klazich/covid-19
 > cd covid-19
 > npm install
