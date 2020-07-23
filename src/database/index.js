@@ -5,8 +5,6 @@ mongoose.Promise = Promise
 export async function openDatabaseConnection() {
   const url = process.env.MONGODB_URL
 
-  console.log(url)
-
   try {
     await mongoose.connect(url, {
       useUnifiedTopology: true,
