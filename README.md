@@ -6,21 +6,19 @@ A GraphQL server for COVID-19 time series data for counties in the United States
 
 The COVID-19 data is sourced from the [COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19). More specifically, the confirmed US cases time series csv table and the FIPS lookup table.
 
+> More information on how the data is processed see the database directory and it's [readme](src/database/seed/README.md).
+
 ## Querying the Production Server
 
-A production version of the GraphQL server is hosted on [Heroku](https://www.heroku.com/platform). The endpoint is at:
-
-`https://covid-19-73586.herokuapp.com/`
-
-A scheduler add-on runs the [seed](#Seeding-the-Database) script once a day to update the MongoDB Atlas database cluster.
+A production version of the GraphQL server is hosted on [Heroku](https://www.heroku.com/platform). The endpoint is at: `https://covid-19-73586.herokuapp.com/`. A scheduler add-on runs the [seed](#Seeding-the-Database) script once a day to update the MongoDB Atlas database cluster.
 
 If you have [Postman](https://www.postman.com/) feel free to import the collection and play around with the different ways to send requests.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/e47bb7daee6dae75f1cd)
 
-**Below are some additional methods of sending graphql queries to the server.**
+### Additional Methods & Examples for Querying Server
 
-### GET request
+#### GET request
 
 ```http
 GET /?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}} HTTP/1.1
@@ -29,16 +27,66 @@ Content-Type: application/json
 ```
 
 <details>
-  <summary>cURL</summary>
+  <summary><b>cURL</b></summary>
 
 ```sh
-curl --location --request GET 'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}' \
---header 'Content-Type: application/json'
+> curl --location --request GET 'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}' \
+  --header 'Content-Type: application/json'
 ```
 
 </details>
 
-### POST request with variables
+<details>
+  <summary><b>JavaScript - Fetch</b></summary>
+
+```javascript
+const myHeaders = new Headers()
+myHeaders.append('Content-Type', 'application/json')
+
+const requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow',
+}
+
+fetch(
+  'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}',
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log('error', error))
+```
+
+</details>
+
+<details>
+  <summary><b>NodeJs - Axios</b></summary>
+
+```javascript
+import axios from 'axios
+
+const config = {
+  method: 'get',
+  url:
+    'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+}
+
+axios(config)
+  .then((response) => {
+    console.log(JSON.stringify(response.data))
+  })
+  .catch((error) => {
+    console.log(error)
+  })
+```
+
+</details>
+
+#### POST request using variables
 
 ```http
 POST / HTTP/1.1
@@ -69,18 +117,18 @@ Content-Type: application/json
 ```
 
 <details>
-  <summary>cURL</summary>
+  <summary><b>cURL</b></summary>
 
 ```sh
-curl --location --request POST 'https://covid-19-73586.herokuapp.com/' \
---header 'Content-Type: application/json' \
---data-raw '{"query":"query entries($where: EntriesWhereInput!) {entries(where: $where) {id,combined_name,population,loc{coordinates},date,confirmed}\r\n}","variables":{"where":{"state":"Kentucky","county":"Jefferson"}}}'
+> curl --location --request POST 'https://covid-19-73586.herokuapp.com/' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{"query":"query entries($where: EntriesWhereInput!) {entries(where: $where) {id,combined_name,population,loc{coordinates},date,confirmed}\r\n}","variables":{"where":{"state":"Kentucky","county":"Jefferson"}}}'
 ```
 
 </details>
 
 <details>
-  <summary>JavaScript - Fetch</summary>
+  <summary><b>JavaScript - Fetch</b></summary>
 
 ```javascript
 const myHeaders = new Headers()
@@ -123,6 +171,56 @@ fetch('https://covid-19-73586.herokuapp.com/', requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.log('error', error))
+```
+
+</details>
+
+<details>
+  <summary><b>NodeJs - Axios</b></summary>
+
+```javascript
+import axios from 'axios'
+
+const query = `query entries ($where: EntriesWhereInput!) {
+  entries (where: $where) {
+    id
+    combined_name
+    population
+    loc {
+      type
+      coordinates
+    }
+    date
+    confirmed
+  }
+}`
+
+const variables = {
+  where: {
+    state: 'Kentucky',
+    county: 'Jefferson',
+  },
+}
+
+const config = {
+  method: 'post',
+  url: 'https://covid-19-73586.herokuapp.com/',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  data: JSON.stringify({
+    query,
+    variables,
+  }),
+}
+
+axios(config)
+  .then((response) => {
+    console.log(JSON.stringify(response.data))
+  })
+  .catch((error) => {
+    console.log(error)
+  })
 ```
 
 </details>
