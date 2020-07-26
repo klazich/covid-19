@@ -76,24 +76,39 @@ export const defaultPlaygroundQuery = `{
 
   # Query database by a location's state and county names:
   example1: entries(where: { state: "Kentucky", county: "Jefferson" }) {
+    id
     combined_name
     population
+    loc {
+      type
+      coordinates
+    }
     date
     confirmed
   }
 
   # Query database by a location's UID number:
   example2: entries(where: { uid: 84021111 }) {
+    id
     combined_name
     population
+    loc {
+      type
+      coordinates
+    }
     date
     confirmed
   }
 
   # Query database by a location's FIPS number:
   example3: entries(where: { fips: 21111 }) {
+    id
     combined_name
     population
+    loc {
+      type
+      coordinates
+    }
     date
     confirmed
   }
