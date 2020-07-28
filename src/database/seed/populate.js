@@ -34,7 +34,7 @@ const parseDate = (str) =>
   str.split(/\//g).map((v, i) => parseInt(i === 2 ? `20${v}` : v, 10))
 
 // Map the original keys to there mongodb schema equivalent
-const cleanKeys = (obj) => ({
+const cleanAndTypeKeys = (obj) => ({
   uid: Number(obj.UID),
   country_iso2: obj.iso2,
   country_iso3: obj.iso3,
@@ -54,9 +54,10 @@ async function cleanJHUData() {
   const populationMap = await fetchJHUPopulationMap()
 
   return function* iterCleaned(obj) {
-    const cleaned = cleanKeys(obj)
+    const cleaned = cleanAndTypeKeys(obj)
     cleaned.population = populationMap.get(cleaned.uid) // Add population stats to obj
 
+    // Remove keys with empty values
     for (const key in cleaned) if (cleaned[key] === '') delete cleaned[key]
 
     for (const key in obj) {
