@@ -1,12 +1,24 @@
 # covid-19
 
-A GraphQL server for COVID-19 time series data for counties in the United States.
+A [GraphQL](https://graphql.org/) server on top of a [MongoDB](https://www.mongodb.com/) database for COVID-19 time series data for counties in the United States.
 
-## The Data
+## Table of Contents <!-- omit in toc -->
 
-The COVID-19 data is sourced from the [COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19). More specifically, the confirmed US cases time series csv table and the FIPS lookup table.
+- [Querying the Production Server](#querying-the-production-server)
+  - [Additional Methods & Examples for Querying the Heroku Server](#additional-methods--examples-for-querying-the-heroku-server)
+    - [GET request](#get-request)
+    - [POST request using variables](#post-request-using-variables)
+- [Local Setup & Development](#local-setup--development)
+  - [Requirements](#requirements)
+  - [Clone and Install](#clone-and-install)
+  - [Environment Variables](#environment-variables)
+  - [Seeding the Database](#seeding-the-database)
+  - [Starting the GraphQL Server](#starting-the-graphql-server)
+- [The Data](#the-data)
+  - [Fetching & Parsing](#fetching--parsing)
+  - [Transforming & Cleaning](#transforming--cleaning)
 
-> More information on how the data is processed see the database directory and it's [readme](src/database/seed/README.md).
+---
 
 ## Querying the Production Server
 
@@ -16,7 +28,7 @@ If you have [Postman](https://www.postman.com/) feel free to import the collecti
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/e47bb7daee6dae75f1cd)
 
-### Additional Methods & Examples for Querying Server
+### Additional Methods & Examples for Querying the Heroku Server
 
 #### GET request
 
@@ -27,7 +39,7 @@ Content-Type: application/json
 ```
 
 <details>
-  <summary><b>cURL</b></summary>
+  <summary>cURL</summary>
 
 ```sh
 > curl --location --request GET 'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}' \
@@ -37,7 +49,7 @@ Content-Type: application/json
 </details>
 
 <details>
-  <summary><b>JavaScript - Fetch</b></summary>
+  <summary>JavaScript - Fetch</summary>
 
 ```javascript
 const myHeaders = new Headers()
@@ -61,7 +73,7 @@ fetch(
 </details>
 
 <details>
-  <summary><b>NodeJs - Axios</b></summary>
+  <summary>NodeJs - Axios</summary>
 
 ```javascript
 import axios from 'axios
@@ -117,7 +129,7 @@ Content-Type: application/json
 ```
 
 <details>
-  <summary><b>cURL</b></summary>
+  <summary>cURL</summary>
 
 ```sh
 > curl --location --request POST 'https://covid-19-73586.herokuapp.com/' \
@@ -128,7 +140,7 @@ Content-Type: application/json
 </details>
 
 <details>
-  <summary><b>JavaScript - Fetch</b></summary>
+  <summary>JavaScript - Fetch</summary>
 
 ```javascript
 const myHeaders = new Headers()
@@ -176,7 +188,7 @@ fetch('https://covid-19-73586.herokuapp.com/', requestOptions)
 </details>
 
 <details>
-  <summary><b>NodeJs - Axios</b></summary>
+  <summary>NodeJs - Axios</summary>
 
 ```javascript
 import axios from 'axios'
@@ -225,7 +237,7 @@ axios(config)
 
 </details>
 
-## Local Setup
+## Local Setup & Development
 
 ### Requirements
 
@@ -245,10 +257,10 @@ Clone the repo and install the dependencies through npm.
 
 ### Environment Variables
 
-The graphql server and mongo database require certain environment variables to be set before startup. If they are not defined than the app will fail to start. Make a copy of the `.env-example` (located at project root) and rename it to `.env` and place it in the root of the project.
+The graphql server and mongo database require certain environment variables to be set before startup. If they are not defined than the app will fail to start. Make a copy of the `.env-example` (located at project root, [here](.env.example)) and rename it to `.env` and place it in the root of the project.
 
 ```conf
-PORT=3000
+PORT=4000
 MONGODB_URL=mongodb://localhost:27017/covid-19
 NODE_ENV=development
 ```
@@ -281,6 +293,77 @@ To start the GraphQl server run:
 > npm start
 ```
 
-This will start up a local server with an HTTP endpoint at:
+This will start up the development server locally (when `NODE_ENV` is `'development'`) at: `http://localhost:4000/`, and connect to the mongodb database.
 
--
+> Be sure to seed the database ([see above](#seeding-the-database)) at some point. Otherwise queries will return empty.
+
+The development server also spins up a graphql playground that can be accessed by navigating your browser to the endpoint ([http://localhost:4000/](http://localhost:4000/)). The playground will load with some example queries that you can go ahead and execute.
+
+## The Data
+
+The COVID-19 data is sourced from the [COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19). More specifically, the confirmed US cases time series csv table and the FIPS lookup table.
+
+> See the database directory, [here](src/database/index.js) for the relaxant code.
+
+### Fetching & Parsing
+
+The data starts in a csv file with headers looking like this:
+
+| UID      | iso2 | iso3 | code3 | FIPS    | Admin2    | Province_State | Country_Region | Lat         | Long\_       | Combined_Key              | ... | 7/16/20 | 7/17/20 | 7/18/20 | 7/19/20 | 7/20/20 | 7/21/20 | 7/22/20 | 7/23/20 | 7/24/20 | 7/25/20 | ... |
+| -------- | ---- | ---- | ----- | ------- | --------- | -------------- | -------------- | ----------- | ------------ | ------------------------- | --- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | --- |
+| 84021111 | US   | USA  | 840   | 21111.0 | Jefferson | Kentucky       | US             | 38.18664655 | -85.65931031 | "Jefferson, Kentucky, US" | ... | 4778    | 4861    | 4962    | 5170    | 5263    | 5441    | 5519    | 5635    | 5836    | 6080    | ... |
+
+Using [axios](https://github.com/axios/axios) to create an http data stream and [papaparse](https://www.papaparse.com/) to parse the csv data, each row is transformed into a javascript object:
+
+```javascript
+{
+  UID: '84021111',
+  iso2: 'US',
+  iso3: 'USA',
+  code3: '840',
+  FIPS: '21111.0',
+  Admin2: 'Jefferson',
+  Province_State: 'Kentucky',
+  Country_Region: 'US',
+  Lat: '38.18664655',
+  Long_: '-85.65931031',
+  Combined_Key: 'Jefferson, Kentucky, US',
+  // ...
+  '7/16/20': '4778',
+  '7/17/20': '4861',
+  '7/18/20': '4962',
+  '7/19/20': '5170',
+  '7/20/20': '5263',
+  '7/21/20': '5441',
+  '7/22/20': '5519',
+  '7/23/20': '5635',
+  '7/24/20': '5836',
+  '7/25/20': '6080',
+  // ...
+}
+```
+
+### Transforming & Cleaning
+
+From the above javascript object, we create a new object for each of the date keys along with a copy of all the county's information. These objects will eventually be the documents inserted into the MongoDB database collection. The keys are also cleaned and the values correctly typed. In the end the object conforms to the mongoose [schema](src/database/models/entry.js) and the graphql [schema](src/server/schema.js). Continuing from above, here is an example:
+
+```javascript
+{
+  uid: 84021111,
+  country_iso2: 'US',
+  country_iso3: 'USA',
+  country_code: 840,
+  fips: 21111,
+  county: 'Jefferson',
+  state: 'Kentucky',
+  country: 'US',
+  combined_name: 'Jefferson, Kentucky, US',
+  loc: {
+    type: 'Point',
+    coordinates: [ -85.65931031, 38.18664655 ]
+  },
+  population: 766757,
+  date: 2020-07-25T04:00:00.000Z,
+  confirmed: 6080,
+}
+```
