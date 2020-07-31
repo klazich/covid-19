@@ -7,7 +7,7 @@ A [GraphQL](https://graphql.org/) server on top of a [MongoDB](https://www.mongo
 - [Querying the Production Server](#querying-the-production-server)
   - [Additional Methods & Examples for Querying the Heroku Server](#additional-methods--examples-for-querying-the-heroku-server)
     - [GET request](#get-request)
-    - [POST request using variables](#post-request-using-variables)
+    - [POST request](#post-request)
 - [Local Setup & Development](#local-setup--development)
   - [Requirements](#requirements)
   - [Clone and Install](#clone-and-install)
@@ -26,43 +26,70 @@ A production version of the GraphQL server is hosted on [Heroku](https://www.her
 
 If you have [Postman](https://www.postman.com/) feel free to import the collection and play around with the different ways to send requests.
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/e47bb7daee6dae75f1cd)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/454fef37883d327dd93a)
 
 ### Additional Methods & Examples for Querying the Heroku Server
+
+Each example below sends the following GraphQL query and variables.
+
+```graphql
+query($where: EntriesWhereInput!) {
+  entries(where: $where) {
+    id
+    combined_name
+    population
+    loc {
+      type
+      coordinates
+    }
+    date
+    confirmed
+  }
+}
+```
+
+```json
+{
+  "where": {
+    "state": "Kentucky",
+    "county": "Jefferson"
+  }
+}
+```
 
 #### GET request
 
 ```http
-GET /?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}} HTTP/1.1
+GET /?query=query(%24where%3A%20EntriesWhereInput!)%20%7B%20entries(where%3A%20%24where)%20%7B%20id%20combined_name%20population%20loc%20%7B%20type%20coordinates%20%7D%20date%20confirmed%20%7D%20%7D&variables=%7B%22where%22%3A%7B%22state%22%3A%22Kentucky%22%2C%22county%22%3A%22Jefferson%22%7D%7D HTTP/1.1
 Host: covid-19-73586.herokuapp.com
 Content-Type: application/json
 ```
 
 <details>
-  <summary>cURL</summary>
+<summary>cURL</summary>
 
 ```sh
-> curl --location --request GET 'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}' \
+curl 'https://covid-19-73586.herokuapp.com/?query=query(%24where%3A%20EntriesWhereInput!)%20%7B%20entries(where%3A%20%24where)%20%7B%20id%20combined_name%20population%20loc%20%7B%20type%20coordinates%20%7D%20date%20confirmed%20%7D%20%7D&variables=%7B%22where%22%3A%7B%22state%22%3A%22Kentucky%22%2C%22county%22%3A%22Jefferson%22%7D%7D' \
+  --request GET \
   --header 'Content-Type: application/json'
 ```
 
 </details>
 
 <details>
-  <summary>JavaScript - Fetch</summary>
+<summary>JavaScript - Fetch</summary>
 
 ```javascript
-const myHeaders = new Headers()
-myHeaders.append('Content-Type', 'application/json')
+const getHeaders = new Headers({ 'Content-Type': 'application/json' })
 
 const requestOptions = {
   method: 'GET',
-  headers: myHeaders,
+  headers: getHeaders,
   redirect: 'follow',
 }
 
 fetch(
-  'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}',
+  'https://covid-19-73586.herokuapp.com/?query=query(%24where%3A%20EntriesWhereInput!)%20%7B%20entries(where%3A%20%24where)%20%7B%20id%20combined_name%20population%20loc%20%7B%20type%20coordinates%20%7D%20date%20confirmed%20%7D%20%7D&variables=%7B%22where%22%3A%7B%22state%22%3A%22Kentucky%22%2C%22county%22%3A%22Jefferson%22%7D%7D',
   requestOptions
 )
   .then((response) => response.text())
@@ -72,41 +99,37 @@ fetch(
 
 </details>
 
-<details>
-  <summary>NodeJs - Axios</summary>
-
-```javascript
-import axios from 'axios
-
-const config = {
-  method: 'get',
-  url:
-    'https://covid-19-73586.herokuapp.com/?query={entries(where:{fips:21111}){id,combined_name,population,loc{type,coordinates},date,confirmed}}',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-}
-
-axios(config)
-  .then((response) => {
-    console.log(JSON.stringify(response.data))
-  })
-  .catch((error) => {
-    console.log(error)
-  })
-```
-
-</details>
-
-#### POST request using variables
+#### POST request
 
 ```http
 POST / HTTP/1.1
 Host: covid-19-73586.herokuapp.com
 Content-Type: application/json
+Content-Length: 208
 
-{
-  "query": "query entries($where: EntriesWhereInput!) {
+{"query":"query($where: EntriesWhereInput!) { entries(where: $where) { id combined_name population loc { type coordinates } date confirmed } }","variables":{"where":{"state":"Kentucky","county":"Jefferson"}}}
+```
+
+<details>
+<summary>cURL</summary>
+
+```sh
+curl 'https://covid-19-73586.herokuapp.com/' \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-raw '{"query":"query($where: EntriesWhereInput!) { entries(where: $where) { id combined_name population loc { type coordinates } date confirmed } }","variables":{"where":{"state":"Kentucky","county":"Jefferson"}}}'
+```
+
+</details>
+
+<details>
+<summary>JavaScript - Fetch</summary>
+
+```javascript
+const postHeaders = new Headers({ 'Content-Type': 'application/json' })
+
+const graphql = JSON.stringify({
+  query: `query($where: EntriesWhereInput!) {
     entries(where: $where) {
       id
       combined_name
@@ -118,121 +141,26 @@ Content-Type: application/json
       date
       confirmed
     }
-  }",
-  "variables": {
-    "where": {
-      "state": "Kentucky",
-      "county":"Jefferson"
-    }
-  }
-}
-```
-
-<details>
-  <summary>cURL</summary>
-
-```sh
-> curl --location --request POST 'https://covid-19-73586.herokuapp.com/' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{"query":"query entries($where: EntriesWhereInput!) {entries(where: $where) {id,combined_name,population,loc{coordinates},date,confirmed}\r\n}","variables":{"where":{"state":"Kentucky","county":"Jefferson"}}}'
-```
-
-</details>
-
-<details>
-  <summary>JavaScript - Fetch</summary>
-
-```javascript
-const myHeaders = new Headers()
-myHeaders.append('Content-Type', 'application/json')
-
-const query = `query entries ($where: EntriesWhereInput!) {
-  entries (where: $where) {
-    id
-    combined_name
-    population
-    loc {
-      type
-      coordinates
-    }
-    date
-    confirmed
-  }
-}`
-
-const variables = {
-  where: {
-    state: 'Kentucky',
-    county: 'Jefferson',
+  }`,
+  variables: {
+    where: {
+      state: 'Kentucky',
+      county: 'Jefferson',
+    },
   },
-}
-
-const graphql = JSON.stringify({
-  query,
-  variables,
 })
 
-const requestOptions = {
+var requestOptions = {
   method: 'POST',
-  headers: myHeaders,
+  headers: postHeaders,
   body: graphql,
   redirect: 'follow',
 }
 
-fetch('https://covid-19-73586.herokuapp.com/', requestOptions)
+fetch('https://covid-19-73586.herokuapp.com', requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.log('error', error))
-```
-
-</details>
-
-<details>
-  <summary>NodeJs - Axios</summary>
-
-```javascript
-import axios from 'axios'
-
-const query = `query entries ($where: EntriesWhereInput!) {
-  entries (where: $where) {
-    id
-    combined_name
-    population
-    loc {
-      type
-      coordinates
-    }
-    date
-    confirmed
-  }
-}`
-
-const variables = {
-  where: {
-    state: 'Kentucky',
-    county: 'Jefferson',
-  },
-}
-
-const config = {
-  method: 'post',
-  url: 'https://covid-19-73586.herokuapp.com/',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  data: JSON.stringify({
-    query,
-    variables,
-  }),
-}
-
-axios(config)
-  .then((response) => {
-    console.log(JSON.stringify(response.data))
-  })
-  .catch((error) => {
-    console.log(error)
-  })
 ```
 
 </details>
@@ -250,9 +178,9 @@ axios(config)
 Clone the repo and install the dependencies through npm.
 
 ```sh
-> git clone https://github.com/klazich/covid-19
-> cd covid-19
-> npm install
+git clone https://github.com/klazich/covid-19
+cd covid-19
+npm install
 ```
 
 ### Environment Variables
@@ -268,11 +196,12 @@ NODE_ENV=development
 With [dotenv-safe](https://www.npmjs.com/package/dotenv-safe) the correct development environment variables will be set when starting up the server and database.
 
 ### Seeding the Database
+> **If you use a free database service, such as mLab's free tier, inserting the full dataset WILL consume a large portion of your quota. See below on how to limit the number of documents created.**
 
 Seed the database with data by running:
 
 ```sh
-> npm run seed
+npm run seed
 ```
 
 This will initiate the fetching, parsing, transforming and inserting of the data into the mongo database.
