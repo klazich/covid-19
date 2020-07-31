@@ -70,38 +70,16 @@ export const typeDefs = gql`
   }
 `
 
-export const defaultPlaygroundQuery = `{
-  # The 3 examples below show the different ways to query the endpoint.
-  # Each one should return the same data.
+const playgroundQuery = `# Play around with different variables in the "Query Variables"
+# section at the bottom. For example, another way to query for
+# Jefferson County Kentucky is by using the county's fips number
+# (21111), instead of the state and county property:
+#
+# { "where": { "fips": 21111 } }
+#
 
-  # Query database by a location's state and county names:
-  example1: entries(where: { state: "Kentucky", county: "Jefferson" }) {
-    id
-    combined_name
-    population
-    loc {
-      type
-      coordinates
-    }
-    date
-    confirmed
-  }
-
-  # Query database by a location's UID number:
-  example2: entries(where: { uid: 84021111 }) {
-    id
-    combined_name
-    population
-    loc {
-      type
-      coordinates
-    }
-    date
-    confirmed
-  }
-
-  # Query database by a location's FIPS number:
-  example3: entries(where: { fips: 21111 }) {
+query entries($where: EntriesWhereInput!) {
+  entries(where: $where) {
     id
     combined_name
     population
@@ -113,3 +91,16 @@ export const defaultPlaygroundQuery = `{
     confirmed
   }
 }`
+
+const playgroundVariables = `{
+  "where": {
+    "state": "Kentucky",
+    "county": "Jefferson"
+  }
+}`
+
+export const defaultPlaygroundTabOptions = {
+  endpoint: 'http://localhost:4000/',
+  query: playgroundQuery,
+  variables: playgroundVariables,
+}
