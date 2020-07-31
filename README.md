@@ -209,7 +209,7 @@ This will initiate the fetching, parsing, transforming and inserting of the data
 You can pass a limit option to the script to limit how many documents are created and saved to the database. For example, to limit the number of documents created to the first ten thousand you would enter:
 
 ```sh
-> npm run seed -- --limit=10000
+npm run seed -- --limit=10000
 ```
 
 > This can be helpful when debugging database connection issues as seeding the database with the full dataset will create over 500,000 documents and can take up to 30 seconds.
@@ -219,7 +219,7 @@ You can pass a limit option to the script to limit how many documents are create
 To start the GraphQl server run:
 
 ```sh
-> npm start
+npm start
 ```
 
 This will start up the development server locally (when `NODE_ENV` is `'development'`) at: `http://localhost:4000/`, and connect to the mongodb database.
