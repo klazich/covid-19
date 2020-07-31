@@ -4,7 +4,7 @@ import { openDatabaseConnection, closeDatabaseConnection } from '../database'
 import { models } from '../database/models'
 import { resolvers } from './resolvers'
 
-import { typeDefs, defaultPlaygroundQuery } from './schema'
+import { typeDefs, defaultPlaygroundTabOptions } from './schema'
 
 const apolloServer = new ApolloServer({
   typeDefs,
@@ -16,15 +16,8 @@ const apolloServer = new ApolloServer({
   },
   playground:
     process.env.NODE_ENV === 'production'
-      ? false // Don't create playground in production builds.
-      : {
-          tabs: [
-            {
-              endpoint: 'http://localhost:4000/',
-              query: defaultPlaygroundQuery,
-            },
-          ],
-        },
+      ? false // Don't create playground in production builds
+      : { tabs: [{ ...defaultPlaygroundTabOptions }] },
 })
 
 const shutdown = (server) => async () => {
