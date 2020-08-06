@@ -10,7 +10,12 @@
   "main": "lib/server.js",
   "keywords": [
     "covid-19",
-    "api"
+    "api",
+    "graphql",
+    "graphql-server",
+    "mongodb-database",
+    "mongo-database",
+    "parsing"
   ],
   "author": "Kevin Lazich <dev@kevinlazich.com>",
   "license": "MIT",
