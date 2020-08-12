@@ -10,7 +10,12 @@
   "main": "lib/server.js",
   "keywords": [
     "covid-19",
-    "api"
+    "api",
+    "graphql",
+    "graphql-server",
+    "mongodb-database",
+    "mongo-database",
+    "parsing"
   ],
   "author": "Kevin Lazich <dev@kevinlazich.com>",
   "license": "MIT",
@@ -37,12 +42,12 @@
     "graphql-scalars": "^1.2.6",
     "minimist": "^1.2.5",
     "mongodb": "^3.6.0",
-    "mongoose": "^5.9.27",
+    "mongoose": "^5.9.28",
     "papaparse": "^5.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.0",
+    "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
