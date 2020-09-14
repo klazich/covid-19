@@ -15,7 +15,7 @@ async function fetchJHUPopulationMap() {
 
   // The JHU fips lookup table includes statistics for every country in the
   // world. We are only interested in US states and territories which will have
-  // one of the country codes listed here
+  // one of the country codes listed below.
   const countryCodes = new Set(['16', '316', '580', '630', '840', '850'])
   const populationMap = new Map()
 
