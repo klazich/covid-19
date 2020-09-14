@@ -34,19 +34,31 @@ const parseDate = (str) =>
   str.split(/\//g).map((v, i) => parseInt(i === 2 ? `20${v}` : v, 10))
 
 // Map the original keys to there mongodb schema equivalent
-const cleanAndTypeKeys = (obj) => ({
-  uid: Number(obj.UID),
-  country_iso2: obj.iso2,
-  country_iso3: obj.iso3,
-  country_code: Number(obj.code3),
-  fips: Number(obj.FIPS),
-  county: obj.Admin2,
-  state: obj.Province_State,
-  country: obj.Country_Region,
-  combined_name: obj.Combined_Key,
+const cleanAndTypeKeys = ({
+  UID,
+  iso2,
+  iso3,
+  code3,
+  FIPS,
+  Admin2,
+  Province_State,
+  Country_Region,
+  Combined_Key,
+  Long_,
+  Lat,
+}) => ({
+  uid: Number(UID),
+  country_iso2: String(iso2),
+  country_iso3: String(iso3),
+  country_code: Number(code3),
+  fips: Number(FIPS),
+  county: String(Admin2),
+  state: String(Province_State),
+  country: String(Country_Region),
+  combined_name: String(Combined_Key),
   loc: {
     type: 'Point',
-    coordinates: [Number(obj.Long_), Number(obj.Lat)],
+    coordinates: [Number(Long_), Number(Lat)],
   },
 })
 
