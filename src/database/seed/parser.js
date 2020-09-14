@@ -13,9 +13,9 @@ async function createHttpStream(url) {
   try {
     const response = await axios(request)
     return response.data
-  } catch (error) {
-    const { stack } = error.toJSON()
-    console.error(stack || error)
+  } catch (err) {
+    const { stack } = err.toJSON()
+    console.error(stack || err)
   }
 }
 
@@ -33,11 +33,11 @@ async function* iterCsvLinesFromStream(stream) {
   }
 }
 
-export async function remoteCsvParser(url) {
+export async function remoteCsvParserStream(url) {
   try {
     const stream = await createHttpStream(url)
     return iterCsvLinesFromStream(stream)
-  } catch (error) {
-    console.error(error)
+  } catch (err) {
+    console.error(err)
   }
 }

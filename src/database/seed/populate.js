@@ -1,4 +1,4 @@
-import { remoteCsvParser } from './parser'
+import { remoteCsvParserStream } from './parser'
 import { models } from '../models'
 
 const { Entry } = models
@@ -11,7 +11,7 @@ const JHU_TIME_SERIES_DATA_URL =
 async function fetchJHUPopulationMap() {
   const url = JHU_FIPS_LOOKUP_URL
 
-  const iterJHUPopulationData = await remoteCsvParser(url)
+  const iterJHUPopulationData = await remoteCsvParserStream(url)
 
   // The JHU fips lookup table includes statistics for every country in the
   // world. We are only interested in US states and territories which will have
@@ -54,18 +54,18 @@ async function cleanJHUData() {
   const populationMap = await fetchJHUPopulationMap()
 
   return function* iterCleaned(obj) {
-    const cleaned = cleanAndTypeKeys(obj)
-    cleaned.population = populationMap.get(cleaned.uid) // Add population stats to obj
+    const template = cleanAndTypeKeys(obj)
+    template.population = populationMap.get(template.uid) // Add population stats to obj
 
     // Remove keys with empty values
-    for (const key in cleaned) if (cleaned[key] === '') delete cleaned[key]
+    for (const key in template) if (template[key] === '') delete template[key]
 
     for (const key in obj) {
       if (isDate(key)) {
         const [month, day, year] = parseDate(key)
 
         yield {
-          ...cleaned,
+          ...template,
           date: new Date(year, month - 1, day), // Month is 0 indexed
           confirmed: Number(obj[key]),
         }
@@ -79,7 +79,7 @@ async function* iterJHUData() {
 
   const clean = await cleanJHUData()
 
-  for await (const obj of await remoteCsvParser(url)) {
+  for await (const obj of await remoteCsvParserStream(url)) {
     yield* clean(obj) // Pass obj and execution to the clean generator
   }
 }
