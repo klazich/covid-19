@@ -39,7 +39,7 @@
     "axios": "^0.20.0",
     "dotenv-safe": "^8.2.0",
     "graphql": "^15.3.0",
-    "graphql-scalars": "^1.2.6",
+    "graphql-scalars": "^1.2.7",
     "minimist": "^1.2.5",
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.2",
