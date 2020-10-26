@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "apollo-server": "^2.18.2",
-    "axios": "^0.20.0",
+    "axios": "^0.21.0",
     "dotenv-safe": "^8.2.0",
     "graphql": "^15.3.0",
     "graphql-scalars": "^1.4.0",
