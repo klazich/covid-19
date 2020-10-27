@@ -36,13 +36,13 @@
   },
   "dependencies": {
     "apollo-server": "^2.18.2",
-    "axios": "^0.20.0",
+    "axios": "^0.21.0",
     "dotenv-safe": "^8.2.0",
     "graphql": "^15.3.0",
-    "graphql-scalars": "^1.4.0",
+    "graphql-scalars": "^1.4.1",
     "minimist": "^1.2.5",
     "mongodb": "^3.6.2",
-    "mongoose": "^5.10.9",
+    "mongoose": "^5.10.10",
     "papaparse": "^5.3.0"
   },
   "devDependencies": {
@@ -53,8 +53,8 @@
     "@commitlint/config-conventional": "^11.0.0",
     "@commitlint/prompt-cli": "^11.0.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.11.0",
-    "eslint-config-prettier": "^6.13.0",
+    "eslint": "^7.12.1",
+    "eslint-config-prettier": "^6.14.0",
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.2",
