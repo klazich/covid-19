@@ -35,14 +35,14 @@
     "start": "node -r dotenv-safe/config lib/server/index.js"
   },
   "dependencies": {
-    "apollo-server": "^2.19.1",
+    "apollo-server": "^2.19.2",
     "axios": "^0.21.1",
     "dotenv-safe": "^8.2.0",
     "graphql": "^15.4.0",
     "graphql-scalars": "^1.7.0",
     "minimist": "^1.2.5",
     "mongodb": "^3.6.3",
-    "mongoose": "^5.11.11",
+    "mongoose": "^5.11.12",
     "papaparse": "^5.3.0"
   },
   "devDependencies": {
@@ -53,10 +53,10 @@
     "@commitlint/config-conventional": "^11.0.0",
     "@commitlint/prompt-cli": "^11.0.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.17.0",
+    "eslint": "^7.18.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "husky": "^4.3.7",
+    "husky": "^4.3.8",
     "lint-staged": "^10.5.3",
     "prettier": "2.2.1",
     "shx": "^0.3.3"
