@@ -42,7 +42,7 @@
     "graphql-scalars": "^1.9.0",
     "minimist": "^1.2.5",
     "mongodb": "^3.6.5",
-    "mongoose": "^5.12.3",
+    "mongoose": "^5.12.5",
     "papaparse": "^5.3.0"
   },
   "devDependencies": {
@@ -53,7 +53,7 @@
     "@commitlint/config-conventional": "^12.1.1",
     "@commitlint/prompt-cli": "^12.1.1",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.23.0",
+    "eslint": "^7.24.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "husky": "^6.0.0",
