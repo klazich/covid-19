@@ -51,7 +51,7 @@
     "@babel/preset-env": "^7.14.1",
     "@commitlint/cli": "^12.1.1",
     "@commitlint/config-conventional": "^12.1.4",
-    "@commitlint/prompt-cli": "^12.1.1",
+    "@commitlint/prompt-cli": "^12.1.4",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
