@@ -22,11 +22,11 @@ A [GraphQL](https://graphql.org/) server on top of a [MongoDB](https://www.mongo
 
 ## Querying the Production Server
 
-A production version of the GraphQL server is hosted on [Heroku](https://www.heroku.com/platform). The endpoint is at: `https://covid-19-73586.herokuapp.com/`. A scheduler add-on runs the [seed](#Seeding-the-Database) script once a day to update the MongoDB Atlas database cluster.
+A production version of the GraphQL server is hosted on [Heroku](https://www.heroku.com/platform). The endpoint is at: ~~`https://covid-19-73586.herokuapp.com/`~~ no longer active. A scheduler add-on runs the [seed](#Seeding-the-Database) script once a day to update the MongoDB Atlas database cluster.
 
-If you have [Postman](https://www.postman.com/) feel free to import the collection and play around with the different ways to send requests.
+~~If you have [Postman](https://www.postman.com/) feel free to import the collection and play around with the different ways to send requests.~~
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/454fef37883d327dd93a)
+<!-- [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/454fef37883d327dd93a) -->
 
 ### Additional Methods & Examples for Querying the Heroku Server
 
