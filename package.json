@@ -42,7 +42,7 @@
     "graphql-scalars": "^1.10.0",
     "minimist": "^1.2.5",
     "mongodb": "^4.1.1",
-    "mongoose": "^6.0.4",
+    "mongoose": "^6.1.5",
     "papaparse": "^5.3.1"
   },
   "devDependencies": {
