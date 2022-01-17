@@ -59,7 +59,7 @@
     "husky": "^7.0.4",
     "lint-staged": "^11.1.2",
     "prettier": "2.3.2",
-    "shx": "^0.3.3"
+    "shx": "^0.3.4"
   },
   "husky": {
     "hooks": {
