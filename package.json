@@ -35,7 +35,7 @@
     "start": "node -r dotenv-safe/config lib/server/index.js"
   },
   "dependencies": {
-    "apollo-server": "^3.4.1",
+    "apollo-server": "^3.6.6",
     "axios": "^0.21.2",
     "dotenv-safe": "^8.2.0",
     "graphql": "^15.8.0",
